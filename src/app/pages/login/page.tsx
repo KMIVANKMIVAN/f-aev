@@ -1,27 +1,21 @@
 "use client";
-
 import React, { useState } from "react";
-import axios from "axios"; // Para realizar solicitudes HTTP
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { guardarToken } from "../../../utils/auth";
-
-import { useRouter } from 'next/navigation'
+import { guardarUserId } from "../../../utils/userdata";
 
 export default function Login() {
   const router = useRouter();
-
   const loginUrl = "http://localhost:3000/auth/login";
 
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
-  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -29,23 +23,26 @@ export default function Login() {
 
     try {
       const response = await axios.post(loginUrl, formData);
-      if (response.status === 200) {
-        const token = response.data.access_token;
 
-        console.log("1111111111111111");
+      if (response.data.message === "Contraseña Incorrecta") {
+        setLoginError("Contraseña Incorrecta");
+      } else if (response.data.user) {
+        const { user, access_token } = response.data;
 
-        console.log(response.data.user.nivel);
+        if (user.prioridad === 0) {
+          router.push("/pages/updatepassword");
+        } else if (user.prioridad === 1) {
+          router.push("/pages/userstablas");
+        }
 
-        guardarToken(token);
-
-        router.push("/pages/userstablas");
-      } else {
-        console.error("Autenticación fallida");
+        guardarUserId(user.id);
+        guardarToken(access_token);
       }
     } catch (error) {
-      console.error("Error:", error);
+      setLoginError("El Usuario no Existe");
     }
   };
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -109,6 +106,11 @@ export default function Login() {
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
+          </div>
+          <div>
+            {loginError && (
+              <p className="text-red-700 text-center">{loginError}</p>
+            )}
           </div>
           <div>
             <button
