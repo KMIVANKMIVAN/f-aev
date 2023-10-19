@@ -120,20 +120,26 @@ function NavListMenu() {
   const [showNavList2, setShowNavList2] = React.useState(false);
 
   const router = useRouter(); // Obtén el router
-  const handleNavigation = (route) => {
+  /* const handleNavigation = (route) => {
+    setIsMobileMenuOpen(false);
+    setShowNavList2(false);
+    setIsMenuOpen(false);
+    router.push(route); // Navega a la ruta
+  }; */
+  const handleNavigation = (route: string) => {
     setIsMobileMenuOpen(false);
     setShowNavList2(false);
     setIsMenuOpen(false);
     router.push(route); // Navega a la ruta
   };
-  const renderItems = navListMenuItems.map(
+  /* const renderItems = navListMenuItems.map(
     ({ icon, title, description, color }, key) => (
       // <a href="#" key={key}>
       <div
         key={key}
         onClick={() => {
           if (title === "Usuarios") {
-            handleNavigation("/page/usuarios");
+            handleNavigation("/pages/userstablas");
           } else if (title === "Listado de Firmas") {
             handleNavigation("/page/listadopagos");
           }
@@ -162,7 +168,42 @@ function NavListMenu() {
       </div>
       //</a>
     )
-  );
+  ); */
+  const renderItems = navListMenuItems.map(({ icon, title, color }, key) => (
+    // <a href="#" key={key}>
+    <div
+      key={key}
+      onClick={() => {
+        if (title === "Usuarios") {
+          handleNavigation("/pages/userstablas");
+        } else if (title === "Listado de Firmas") {
+          handleNavigation("/page/listadopagos");
+        }
+      }}
+    >
+      <MenuItem className="flex items-center gap-3 rounded-lg">
+        <div
+          className={`rounded-lg p-5 ${colors[color as keyof typeof colors]}`}
+        >
+          {React.createElement(icon, {
+            strokeWidth: 2,
+            className: "h-6 w-6",
+          })}
+        </div>
+        <div>
+          <Typography
+            variant="h6"
+            color="blue-gray"
+            className="flex items-center text-sm"
+          >
+            {title}
+          </Typography>
+        </div>
+      </MenuItem>
+    </div>
+    //</a>
+  ));
+
   return (
     <React.Fragment>
       <Menu
@@ -271,7 +312,7 @@ export default function NavbarInterna() {
 
   return (
     <Navbar className="mx-auto max-w-screen-xl py-2 text-blue-900">
-      <div className="flex items-center justify-between text-blue-900">
+      <div className=" flex items-center justify-between text-blue-900">
         <div></div>
         <div className="hidden  lg:block">
           <NavList />

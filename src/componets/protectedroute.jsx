@@ -1,7 +1,6 @@
 // components/ProtectedRoute.js
 import { useEffect } from "react";
 import { obtenerToken } from "../utils/auth";
-import { useRouter } from "next/router";
 
 const ProtectedRoute = ({ children }) => {
   // const router = useRouter();

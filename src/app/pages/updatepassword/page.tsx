@@ -16,17 +16,17 @@ export default function UpdatePassword() {
   const [formData, setFormData] = useState({ password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
       const token = obtenerToken();
-      const url = `http://localhost:3000/users/updatepassword/${userId}`;
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/updatepassword/${userId}`;
 
       const headers = {
         Authorization: `Bearer ${token}`,
@@ -54,8 +54,8 @@ export default function UpdatePassword() {
             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-white">
-            Actualizar Contraseña de tu Cuenta
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+            Actualiza Contraseña de tu Cuenta
           </h2>
         </div>
 
@@ -65,13 +65,13 @@ export default function UpdatePassword() {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-gray-900 text-white"
+                  className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Contraseña
                 </label>
                 <button
                   type="button"
-                  className="text-sm font-medium leading-6 text-gray-900 hover:text-indigo-600 text-white"
+                  className="text-sm font-medium leading-6 text-gray-900 hover:text-indigo-600"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? "Ocultar contraseña" : "Ver contraseña"}
@@ -86,7 +86,7 @@ export default function UpdatePassword() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>

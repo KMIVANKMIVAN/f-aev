@@ -7,18 +7,18 @@ import { guardarUserId } from "../../../utils/userdata";
 
 export default function Login() {
   const router = useRouter();
-  const loginUrl = "http://localhost:3000/auth/login";
+  const loginUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/auth/login`;
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     try {
@@ -51,7 +51,7 @@ export default function Login() {
           src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
           alt="Your Company"
         />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 text-white">
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 ">
           Iniciar sesión en su cuenta
         </h2>
       </div>
@@ -61,7 +61,7 @@ export default function Login() {
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium leading-6 text-gray-900 text-white"
+              className="block text-sm font-medium leading-6 text-gray-900 "
             >
               Nombre de Usuario
             </label>
@@ -82,13 +82,13 @@ export default function Login() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900 text-white"
+                className="block text-sm font-medium leading-6 text-gray-900 "
               >
                 Contraseña
               </label>
               <button
                 type="button"
-                className="text-sm font-medium leading-6 text-gray-900 hover:text-indigo-600 text-white"
+                className="text-sm font-medium leading-6 text-gray-900 hover:text-indigo-600 "
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? "Ocultar contraseña" : "Ver contraseña"}

@@ -1,72 +1,7 @@
-"use client";
-import React, { useState } from "react";
-import axios from "axios";
-import { obtenerToken } from "../../../utils/auth";
-
-import ProtectedRoute from "../../../componets/protectedroute";
-import NavbarInterna from "../../../componets/navbarinterna";
-
-export default function RegisterUser() {
-  const registerUserUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users`;
-  const token = obtenerToken();
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    superior: "",
-    idOficina: "",
-    dependencia: "",
-    nombre: "",
-    // lastLogin: '',
-    // mosca: '',
-    cargo: "",
-    email: "",
-    // logins: '',
-    // fechaCreacion: '',
-    habilitado: "",
-    nivel: "",
-    genero: "",
-    prioridad: "",
-    idEntidad: "",
-    super: "",
-    cedulaIdentidad: "",
-    expedido: "",
-  });
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post(registerUserUrl, formData, { headers });
-
-      if (response.data) {
-        console.log("SE REGISTRO CORECTAMENTE");
-      }
-    } catch (error) {
-      console.log("HUBO UN ERROR");
-    }
-  };
-
-  return (
-    <ProtectedRoute>
-      <NavbarInterna />
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm pb-5">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight ">
-          Registrar Usuario
-        </h2>
-      </div>
-      <form className="space-y-1" onSubmit={handleSubmit}>
+<form className="space-y-1" onSubmit={handleSubmit}>
         <div className="flex flex-wrap mx-auto  justify-center items-center ">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="username" className="  leading-6 ">
+            <label htmlFor="username" className="  leading-6 text-white">
               Nombre de Usuario
             </label>
             <div className="mt-2">
@@ -83,7 +18,7 @@ export default function RegisterUser() {
             </div>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="superior" className="  leading-6 ">
+            <label htmlFor="superior" className="  leading-6 text-white">
               Superior
             </label>
             <div className="mt-2">
@@ -102,7 +37,7 @@ export default function RegisterUser() {
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="nombre" className="  leading-6 ">
+            <label htmlFor="nombre" className="  leading-6 text-white">
               Nombres AP. Paterno AP. Materno
             </label>
             <div className="mt-2">
@@ -119,8 +54,8 @@ export default function RegisterUser() {
             </div>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="nivel" className="  leading-6 ">
-              Nivel
+            <label htmlFor="nivel" className="  leading-6 text-white">
+              NIVEL
             </label>
             <div className="mt-2">
               <input
@@ -138,25 +73,25 @@ export default function RegisterUser() {
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center ">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="password" className="  leading-6 ">
-              Contraseña
+            {/* <label htmlFor="prioridad" className="  leading-6 text-white">
+              PRIORIDAD/GENERICA
             </label>
             <div className="mt-2">
               <input
-                id="password"
-                name="password"
+                id="prioridad"
+                name="prioridad"
                 type="text"
                 autoComplete="text"
                 required
-                value={formData.password}
+                value={formData.prioridad}
                 onChange={handleInputChange}
                 className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
-            </div>
+            </div> */}
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="idOficina" className="  leading-6 ">
-              ID de Oficina
+            <label htmlFor="idOficina" className="  leading-6 text-white">
+              ID DE OFICINA
             </label>
             <div className="mt-2">
               <input
@@ -174,8 +109,8 @@ export default function RegisterUser() {
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="dependencia" className="  leading-6 ">
-              Dependencia
+            <label htmlFor="dependencia" className="  leading-6 text-white">
+              DEPENDENCIA
             </label>
             <div className="mt-2">
               <input
@@ -191,8 +126,44 @@ export default function RegisterUser() {
             </div>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="cargo" className="  leading-6 ">
-              Cargo
+            {/* <label htmlFor="lastLogin" className="  leading-6 text-white">
+              LAST LOGIN
+            </label>
+            <div className="mt-2">
+              <input
+                id="lastLogin"
+                name="lastLogin"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.lastLogin}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div> */}
+          </div>
+        </div>
+        <div className="flex flex-wrap mx-auto  justify-center items-center ">
+          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
+            {/* <label htmlFor="mosca" className="  leading-6 text-white">
+              MOSCA
+            </label>
+            <div className="mt-2">
+              <input
+                id="mosca"
+                name="mosca"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.mosca}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div> */}
+          </div>
+          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
+            <label htmlFor="cargo" className="  leading-6 text-white">
+              CARGO
             </label>
             <div className="mt-2">
               <input
@@ -208,14 +179,10 @@ export default function RegisterUser() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap mx-auto  justify-center items-center ">
-          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
-          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
-        </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="email" className="  leading-6 ">
-              Correo
+            <label htmlFor="email" className="  leading-6 text-white">
+              CORREO
             </label>
             <div className="mt-2">
               <input
@@ -231,8 +198,44 @@ export default function RegisterUser() {
             </div>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="habilitado" className="  leading-6 ">
-              Habilitado
+            {/* <label htmlFor="logins" className="  leading-6 text-white">
+              LOGIN
+            </label>
+            <div className="mt-2">
+              <input
+                id="logins"
+                name="logins"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.logins}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div> */}
+          </div>
+        </div>
+        <div className="flex flex-wrap mx-auto  justify-center items-center ">
+          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
+            {/* <label htmlFor="fechaCreacion" className="  leading-6 text-white">
+              FECHA DE CREACION
+            </label>
+            <div className="mt-2">
+              <input
+                id="fechaCreacion"
+                name="fechaCreacion"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.fechaCreacion}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div> */}
+          </div>
+          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
+            <label htmlFor="habilitado" className="  leading-6 text-white">
+              HABILITADO
             </label>
             <div className="mt-2">
               <input
@@ -248,19 +251,18 @@ export default function RegisterUser() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap mx-auto  justify-center items-center ">
-          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
-          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
-        </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="genero" className="leading-6 ">
+            <label
+              htmlFor="genero"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
               Género
             </label>
             <select
               id="genero"
               name="genero"
-              className="text-white border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-indigo-600"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
               value={formData.genero}
               onChange={(e) =>
@@ -276,8 +278,8 @@ export default function RegisterUser() {
             </select>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="idEntidad" className="  leading-6 ">
-              ID Entidad
+            <label htmlFor="idEntidad" className="  leading-6 text-white">
+              ID ENTIDAD
             </label>
             <div className="mt-2">
               <input
@@ -295,8 +297,8 @@ export default function RegisterUser() {
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center ">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="cedulaIdentidad" className="  leading-6 ">
-              Cedula de Identidad
+            <label htmlFor="cedulaIdentidad" className="  leading-6 text-white">
+              CEDULA IDENTIDAD
             </label>
             <div className="mt-2">
               <input
@@ -312,14 +314,31 @@ export default function RegisterUser() {
             </div>
           </div>
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="expedido" className="leading-6 ">
-              Expendio
+            {/* <label htmlFor="expedido" className="  leading-6 text-white">
+              EXPENDIO
+            </label>
+            <div className="mt-2">
+              <input
+                id="expedido"
+                name="expedido"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.expedido}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div> */}
+            <label
+              htmlFor="expedido"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              EXPENDIO
             </label>
             <select
               id="expedido"
               name="expedido"
-              // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-indigo-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              className="text-white border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-indigo-600"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
               value={formData.expedido}
               onChange={(e) =>
@@ -344,8 +363,8 @@ export default function RegisterUser() {
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
-            <label htmlFor="super" className="  leading-6 ">
-              Super
+            <label htmlFor="super" className="  leading-6 text-white">
+              SUPER
             </label>
             <div className="mt-2">
               <input
@@ -360,7 +379,23 @@ export default function RegisterUser() {
               />
             </div>
           </div>
-          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
+          <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2">
+            <label htmlFor="password" className="  leading-6 text-white">
+              Contraseña
+            </label>
+            <div className="mt-2">
+              <input
+                id="password"
+                name="password"
+                type="text"
+                autoComplete="text"
+                required
+                value={formData.password}
+                onChange={handleInputChange}
+                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap mx-auto  justify-center items-center">
           <div className=" w-full md:w-1/2 lg:w-1/3 xl:w-1/4 px-2"></div>
@@ -375,8 +410,3 @@ export default function RegisterUser() {
           </button>
         </div>
       </form>
-
-      
-    </ProtectedRoute>
-  );
-}
