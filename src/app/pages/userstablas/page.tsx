@@ -10,14 +10,26 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import NavbarInterna from "../../../componets/navbarinterna";
 
-import { ButtonGroup, Button, Dialog } from "@material-tailwind/react";
+import {
+  ButtonGroup,
+  Button,
+  Dialog,
+  Typography,
+  DialogHeader,
+} from "@material-tailwind/react";
 
 import UpdateUser from "../../../componets/updateuser";
+import UpdatePassword from "../../../componets/updatepassword";
 
 const UsersTablas = () => {
   const router = useRouter();
   const [usersData, setUsersData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const [selectedPasswordId, setSelectedPasswordId] = useState(null);
+  const [modalOpenPassword, setModalOpenPassword] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -45,14 +57,17 @@ const UsersTablas = () => {
   }, []);
   const columns = [
     {
-      name: "editar",
-      label: "EDITAR",
+      name: "actualizar",
+      label: "ACTUALIZAR",
       options: {
         filter: false,
         sort: false,
         customBodyRender: (value, tableMeta, updateValue) => (
           <button
-            onClick={() => handleEditClick(tableMeta.rowData[2])} // El ID se encuentra en la segunda columna
+            onClick={() => {
+              handleEditClick(tableMeta.rowData[2]);
+              handleOpenModal();
+            }}
             className="text-orange-600"
           >
             <svg
@@ -74,8 +89,8 @@ const UsersTablas = () => {
       },
     },
     {
-      name: "editarPassword",
-      label: "EDITAR PASSWORD",
+      name: "resetearPassword",
+      label: "RESETEAR PASSWORD",
       options: {
         filter: false,
         sort: false,
@@ -108,6 +123,14 @@ const UsersTablas = () => {
       options: {
         filter: true,
         // sort: true,
+      },
+    },
+    {
+      name: "habilitado",
+      lavel: "HABILITADO",
+      options: {
+        filter: true,
+        sort: true,
       },
     },
     {
@@ -214,14 +237,7 @@ const UsersTablas = () => {
         sort: true,
       },
     },
-    {
-      name: "habilitado",
-      lavel: "HABILITADO",
-      options: {
-        filter: true,
-        sort: true,
-      },
-    },
+
     {
       name: "genero",
       lavel: "GENERO",
@@ -375,11 +391,15 @@ const UsersTablas = () => {
     console.log(`ID seleccionado para editar: ${id}`);
     // Redirige a la página de edición con el ID
     // router.push(`/pages/updateuser/${id}`);
+    setSelectedUserId(id); // Establece el ID seleccionado en el estado
+    setModalOpen(true); // Abre el modal
   };
   const handleEditClickPassword = (id) => {
     console.log(`ID seleccionado para editar contraseña: ${id}`);
     // Redirige a la página de edición de contraseña con el ID
     // router.push(`/pages/updateuserpassword/${id}`);
+    setSelectedPasswordId(id); // Establece el ID seleccionado en el estado
+    setModalOpenPassword(true);
   };
 
   const handleOpenModal = () => {
@@ -389,6 +409,13 @@ const UsersTablas = () => {
   const handleCloseModal = () => {
     setModalOpen(false); // Cierra el modal
   };
+  const handleOpenModalPassword = () => {
+    setModalOpen(true); // Abre el modal al hacer clic en un botón
+  };
+
+  const handleCloseModalPassword = () => {
+    setModalOpen(false); // Cierra el modal
+  };
 
   return (
     <ProtectedRoute>
@@ -396,27 +423,107 @@ const UsersTablas = () => {
       {/* <div className="mx-auto max-w-screen-xl pt-10"> */}
 
       {/* </div> */}
-      <div className="bg-green-400 flex items-start justify-center">
-        <Button onClick={handleOpenModal} className="bg-blue-800">
-          Abrir Modal
-        </Button>
-      </div>
+
       <Dialog
         open={modalOpen}
-        onClose={handleCloseModal}
-        className="bg-transparent mx-auto my-auto px-6 py-12 lg:px-8"
+        // onClose={handleCloseModal}
+        onClose={() => {
+          setSelectedUserId(null); // Limpia el ID seleccionado al cerrar el modal
+          setModalOpen(false); // Cierra el modal
+        }}
+        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-50"
+        // className="bg-transparent mx-auto my-auto px-6 px-6 py-12 lg:px-8"
+        // style={{ maxHeight: "650px", maxWidth: "400px", overflowY: "auto" }}
+        style={{
+          position: "fixed",
+          left: "40%",
+          // transform: "translate(-50%, -50%)",
+          maxWidth: "90%",
+          maxHeight: "90%",
+          overflowY: "auto",
+          zIndex: 9999,
+        }}
       >
-        <div
-          className="bg-transparent "
-          // style={{ maxHeight: "400px", overflowY: "auto" }}
+        {/* <UpdateUser /> */}
+        <div className="flex items-center justify-between">
+          <DialogHeader className="flex flex-col items-start">
+            {" "}
+            <Typography className="mb-1" variant="h4">
+              Actualizar Usuario
+            </Typography>
+          </DialogHeader>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="mr-3 h-10 w-8"
+            // onClick={handleOpenModal}
+            onClick={() => {
+              // Limpia el ID seleccionado al cerrar el modal
+              setModalOpen(false); // Cierra el modal
+            }}
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </div>
+        <UpdateUser userId={selectedUserId} />
+        {/* <Button onClick={handleCloseModal} className="bg-orange-500 "> */}
+        {/* <Button
+          className="bg-orange-500 "
+          onClick={() => {
+            setSelectedUserId(null); // Limpia el ID seleccionado al cerrar el modal
+            setModalOpen(false); // Cierra el modal
+          }}
         >
-          <UpdateUser />
+          Cerrar
+        </Button> */}
+      </Dialog>
+      <Dialog
+        open={modalOpenPassword}
+        onClose={() => {
+          setSelectedPasswordId(null); // Limpia el ID seleccionado al cerrar el modal
+          setModalOpenPassword(false); // Cierra el modal
+        }}
+        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-50"
+        style={{
+          position: "fixed",
+          top: "30%",
+          left: "40%",
+          maxWidth: "90%",
+          maxHeight: "90%",
+          overflowY: "auto",
+          zIndex: 9999,
+        }}
+      >
+        {/* <UpdateUser /> */}
+        <div className="flex items-center justify-between">
+          <DialogHeader className="flex flex-col items-start">
+            {" "}
+            <Typography className="mb-1" variant="h4">
+              Resetear Contraseña
+            </Typography>
+          </DialogHeader>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="mr-3 h-10 w-8"
+            onClick={() => {
+              setModalOpenPassword(false); // Cierra el modal
+            }}
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+              clipRule="evenodd"
+            />
+          </svg>
         </div>
-        <div className="bg-transparent flex items-start justify-center py-5">
-          <Button onClick={handleCloseModal} className="bg-blue-800 ">
-            Cerrar
-          </Button>
-        </div>
+        <UpdatePassword userId={selectedPasswordId} />
       </Dialog>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         {/* <ThemeProvider theme={darkTheme}> */}
@@ -426,8 +533,8 @@ const UsersTablas = () => {
           title={
             <ButtonGroup>
               {createUser()}
-              {updateUser()}
-              {updateUserPassword()}
+              {/* {updateUser()}
+              {updateUserPassword()} */}
             </ButtonGroup>
           }
           data={usersData}
