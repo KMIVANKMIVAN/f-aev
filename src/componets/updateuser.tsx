@@ -5,7 +5,7 @@ import { obtenerToken } from "../utils/auth";
 import { useRouter } from "next/navigation";
 import { Alert } from "@material-tailwind/react";
 // export default function UpdateUser() {
-export default function UpdateUser({ userId }) {
+export default function UpdateUser({ userId, urltable }) {
   const router = useRouter();
   const token = obtenerToken();
   const headers = {
@@ -13,6 +13,7 @@ export default function UpdateUser({ userId }) {
   };
 
   console.log("1111 " + userId);
+  console.log("2222 " + urltable);
 
   // const [userData, setUserData] = useState('');
   const [userData, setUserData] = useState({
@@ -33,10 +34,10 @@ export default function UpdateUser({ userId }) {
     cedulaIdentidad: "",
     expedido: "",
   });
-
+  /* 
   console.log("1111 " + userData.username);
   console.log("2222 " + userData.superior);
-  console.log("3333 " + userData.email);
+  console.log("3333 " + userData.email); */
 
   /* const getOneUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/id/1328`;
 
@@ -90,7 +91,7 @@ export default function UpdateUser({ userId }) {
 
       if (response.data) {
         console.log("SE ACTUALIZÓ CORRECTAMENTE");
-        router.push("/pages/userstablas");
+        router.push(urltable);
       }
     } catch (error) {
       console.error("HUBO UN ERROR", error);
@@ -135,7 +136,6 @@ export default function UpdateUser({ userId }) {
               className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
-
           <label htmlFor="superior" className="  leading-6 ">
             Superior
           </label>
@@ -150,7 +150,6 @@ export default function UpdateUser({ userId }) {
               className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
-
           <label htmlFor="nivel" className="  leading-6 ">
             Nivel
           </label>
@@ -238,18 +237,6 @@ export default function UpdateUser({ userId }) {
           <label htmlFor="genero" className="  leading-6 ">
             Género
           </label>
-          {/* <div className="pb-2">
-              <input
-                id="genero"
-                name="genero"
-                type="text"
-                autoComplete="text"
-                
-                value={userData.genero}
-                onChange={handleInputUpdate}
-                className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div> */}
           <select
             id="genero"
             name="genero"

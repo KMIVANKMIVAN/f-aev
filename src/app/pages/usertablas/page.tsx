@@ -21,16 +21,17 @@ import {
 import UpdateUser from "../../../componets/updateuser";
 import UpdatePassword from "../../../componets/updatepassword";
 
-const UsersTablas = () => {
+const UserTablas = () => {
   const router = useRouter();
   const [usersData, setUsersData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+
   const [selectedUserId, setSelectedUserId] = useState(null);
 
   const [selectedPasswordId, setSelectedPasswordId] = useState(null);
   const [modalOpenPassword, setModalOpenPassword] = useState(false);
 
-  const urltable = "/pages/usertablas";
+  const urltable = "/pages/userstablas";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -403,7 +404,7 @@ const UsersTablas = () => {
       },
     },
   ];
-
+  
   const options = {
     filter: false,
     filterType: undefined,
@@ -623,4 +624,4 @@ const UsersTablas = () => {
   );
 };
 
-export default UsersTablas;
+export default UserTablas;

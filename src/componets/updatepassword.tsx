@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { Alert } from "@material-tailwind/react";
 
-export default function UpdatePassword({ userId }) {
+export default function UpdatePassword({ userId, urltable }) {
   const router = useRouter();
   const passwordId = userId;
 
@@ -34,8 +34,7 @@ export default function UpdatePassword({ userId }) {
       const response = await axios.patch(url, formData, { headers });
 
       if (response.status === 200) {
-        console.log("Contraseña actualizada con éxito");
-        router.push("/pages/userstablas");
+        router.push(urltable);
       } else {
         console.error("Error al actualizar la contraseña");
       }
