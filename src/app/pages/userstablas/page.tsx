@@ -431,7 +431,7 @@ const UsersTablas = () => {
           setSelectedUserId(null); // Limpia el ID seleccionado al cerrar el modal
           setModalOpen(false); // Cierra el modal
         }}
-        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-50"
+        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-100"
         // className="bg-transparent mx-auto my-auto px-6 px-6 py-12 lg:px-8"
         // style={{ maxHeight: "650px", maxWidth: "400px", overflowY: "auto" }}
         style={{
@@ -488,7 +488,7 @@ const UsersTablas = () => {
           setSelectedPasswordId(null); // Limpia el ID seleccionado al cerrar el modal
           setModalOpenPassword(false); // Cierra el modal
         }}
-        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-50"
+        className="rounded-lg w-96 p-5 my-4 dark:bg-slate-100"
         style={{
           position: "fixed",
           top: "30%",

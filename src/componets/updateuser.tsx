@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import { useRouter } from "next/navigation";
+import { Alert } from "@material-tailwind/react";
 // export default function UpdateUser() {
 export default function UpdateUser({ userId }) {
   const router = useRouter();
@@ -94,6 +95,12 @@ export default function UpdateUser({ userId }) {
     } catch (error) {
       console.error("HUBO UN ERROR", error);
     }
+  };
+
+  const [expanded, setExpanded] = useState(false);
+
+  const handleButtonClick = () => {
+    setExpanded(!expanded);
   };
 
   return (
@@ -326,13 +333,22 @@ export default function UpdateUser({ userId }) {
             />
           </div>
 
-          <div className="flex flex-wrap mx-auto py-3 justify-center items-center">
+          <div className="flex flex-wrap text-center mx-auto py-3 justify-center items-center">
             <button
               type="submit"
               className=" rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={handleButtonClick}
             >
-              Actualizar Usuario
+              {expanded ? "Actualizado" : "Actualizar Usuario"}
             </button>
+            {expanded && (
+              <Alert
+                className="bg-green-600 mt-5 text-center text-white"
+                variant="outlined"
+              >
+                El Usuario Fue Actualizado
+              </Alert>
+            )}
           </div>
         </form>
       )}
