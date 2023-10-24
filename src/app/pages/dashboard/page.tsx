@@ -1,9 +1,9 @@
-import Login from "../componets/login";
+
 
 export default function Home() {
   return (
     <>
-      <Login />
+      <h1>influencia</h1>
     </>
   );
 }

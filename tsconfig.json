@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/pages/userstablas", ".navbarmodelo"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/pages/userstablas", ".navbarmodelo", "src/componets/footer.jsx", "src/componets/login.tsx"],
   "exclude": ["node_modules"]
 }

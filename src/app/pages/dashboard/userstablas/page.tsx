@@ -23,7 +23,7 @@ import UpdatePassword from "../../../componets/updatepassword";
 
 import SiderNavbar from "../../../componets/sidernavbar";
 
-const UsersTablasComponet = () => {
+const UsersTablas = () => {
   const router = useRouter();
   const [usersData, setUsersData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);

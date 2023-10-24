@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import SiderNavbar from "../../../componets/sidernavbar";
-import Head from "next/head";
 
-import UsersTablas from "../userstablas/page";
+import UsersTablas from "../app/pages/userstablas/page";
 
 import Link from "next/link";
 
-const Prueba = () => {
+const Sidebar = () => {
   return (
     <div className="flex-row lg:flex">
       <div className="flex flex-col w-full p-3 bg-white shadow lg:h-screen lg:w-72">
@@ -166,14 +164,10 @@ const Prueba = () => {
         </div>
       </div>
       <div className="container mx-auto ">
-        <div className="grid grid-cols-1   lg:grid-cols-1">
-          <UsersTablas /> {/* lo que quiero transmitir es que esto sea dinamico que cuando vaya a otras url solo cambie
-           esto, por que lo que me interesa es la estructura como parti la pantalla entonces solo este 
-           componente debe cambiar*/}
-        </div>
+        <div className="grid grid-cols-1   lg:grid-cols-1"></div>
       </div>
     </div>
   );
 };
 
-export default Prueba;
+export default Sidebar;

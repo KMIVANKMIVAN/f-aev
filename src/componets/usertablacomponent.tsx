@@ -2,13 +2,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "../../../componets/protectedroute";
 import { obtenerToken } from "../../../utils/auth";
 
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import NavbarInterna from "../../../componets/navbarinterna";
 
 import {
   ButtonGroup,
@@ -23,7 +21,7 @@ import UpdatePassword from "../../../componets/updatepassword";
 
 import SiderNavbar from "../../../componets/sidernavbar";
 
-const UsersTablasComponet = () => {
+const UserTablaComponet = () => {
   const router = useRouter();
   const [usersData, setUsersData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -487,9 +485,7 @@ const UsersTablasComponet = () => {
   };
 
   return (
-    <ProtectedRoute>
-      {/* <NavbarInterna /> */}
-
+    <>
       <Dialog
         open={modalOpen}
         onClose={() => {
@@ -580,7 +576,7 @@ const UsersTablasComponet = () => {
           options={options}
         />
       </div>
-    </ProtectedRoute>
+    </>
   );
 };
 

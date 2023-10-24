@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { guardarToken } from "../../../utils/auth";
-import { guardarUserId } from "../../../utils/userdata";
+import { guardarToken } from "../utils/auth";
+import { guardarUserId } from "../utils/userdata";
 
 export default function Login() {
   const router = useRouter();
