@@ -4,7 +4,7 @@ import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import { useRouter } from "next/navigation";
 import { Alert } from "@material-tailwind/react";
-// export default function UpdateUser() {
+
 export default function UpdateUser({ userId, urltable }) {
   const router = useRouter();
   const token = obtenerToken();
@@ -12,10 +12,6 @@ export default function UpdateUser({ userId, urltable }) {
     Authorization: `Bearer ${token}`,
   };
 
-  console.log("1111 " + userId);
-  console.log("2222 " + urltable);
-
-  // const [userData, setUserData] = useState('');
   const [userData, setUserData] = useState({
     id: userId,
     username: "",
@@ -34,24 +30,6 @@ export default function UpdateUser({ userId, urltable }) {
     cedulaIdentidad: "",
     expedido: "",
   });
-  /* 
-  console.log("1111 " + userData.username);
-  console.log("2222 " + userData.superior);
-  console.log("3333 " + userData.email); */
-
-  /* const getOneUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/id/1328`;
-
-  try {
-    const response = await axios.get(getOneUrl, { headers });
-
-    if (response.data) {
-      setUserData(response.data);
-      console.log("Usuario encontrado correctamente");
-    }
-  } catch (error) {
-    console.error("Hubo un error", error);
-    // Handle the error
-  } */
 
   async function fetchUserData() {
     if (!userData.username) {
@@ -72,7 +50,6 @@ export default function UpdateUser({ userId, urltable }) {
     }
   }
 
-  // Llama a la función para cargar los datos del usuario
   fetchUserData();
 
   const handleInputUpdate = (e) => {
@@ -83,7 +60,7 @@ export default function UpdateUser({ userId, urltable }) {
     }));
   };
 
-  const handleSubmitUpdate = async (e: any) => {
+  const handleSubmitUpdate = async (e) => {
     e.preventDefault();
     const updateUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/${userData.id}`;
     try {

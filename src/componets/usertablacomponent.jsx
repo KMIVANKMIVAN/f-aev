@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { obtenerToken } from "../../../utils/auth";
+import { obtenerToken } from "../utils/auth";
 
 import MUIDataTable from "mui-datatables";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import UpdateUser from "./updateuser";
+import ResetPassword from "./resetpassword";
 
 import {
   ButtonGroup,
@@ -16,12 +17,8 @@ import {
   DialogHeader,
 } from "@material-tailwind/react";
 
-import UpdateUser from "../../../componets/updateuser";
-import UpdatePassword from "../../../componets/updatepassword";
 
-import SiderNavbar from "../../../componets/sidernavbar";
-
-const UserTablaComponet = () => {
+const UserTablaComponet = ({urltable}) => {
   const router = useRouter();
   const [usersData, setUsersData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,8 +26,6 @@ const UserTablaComponet = () => {
 
   const [selectedPasswordId, setSelectedPasswordId] = useState(null);
   const [modalOpenPassword, setModalOpenPassword] = useState(false);
-
-  const urltable = "/pages/usertablas";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,8 +68,6 @@ const UserTablaComponet = () => {
       );
 
       if (response.status === 200) {
-        // La actualización se realizó con éxito en la base de datos
-        // Puedes recargar los datos de la tabla o realizar otras acciones necesarias.
         router.push(urltable);
       } else {
         console.error("Error al actualizar el estado del usuario");
@@ -155,17 +148,10 @@ const UserTablaComponet = () => {
             <button
               className="bg-transparent hover:bg-stone-200 py-2 px-4"
               style={{
-                // backgroundColor: value === 1 ? "red" : "green",
                 color: value === 1 ? "red" : "green",
                 border: `2px solid ${value === 1 ? "red" : "green"}`,
                 borderRadius: "5px",
               }}
-              /* onClick={() => {
-              handleClickHabilitado(tableMeta.rowData[2]);
-              // const rowId = tableMeta.rowData[0]; // Suponiendo que el ID está en la primera columna
-              const nuevoEstado = value === 1 ? 0 : 1; // Cambia de 1 a 0 y viceversa
-              actualizarEstado(selectedUserIdHabilitado, nuevoEstado);
-            }} */
               onClick={() => {
                 const nuevoEstado = value === 1 ? 0 : 1;
                 actualizarEstado(tableMeta.rowData[3], nuevoEstado);
@@ -370,25 +356,14 @@ const UserTablaComponet = () => {
     selectableRows: false,
     print: false,
     responsive: "horisontal",
-    /* onRowClick: (rowData, rowMeta) => {
-      if (rowMeta && rowMeta.colIndex === 0) {
-        handleEditClick(rowData[2]);
-      }
-    }, */
   };
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: "dark",
-    },
-  });
 
   const createUser = () => (
-    // <div className="flex items-center gap-4">
     <Button
       variant="gradient"
       className="flex items-center gap-3 text-green-500"
-      onClick={() => router.push("/pages/registeruser")}
+      onClick={() => router.push("/pages/dashboard/registeruser")}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -406,10 +381,8 @@ const UserTablaComponet = () => {
       </svg>
       Anadir Usuarios
     </Button>
-    // </div>
   );
   const updateUser = () => (
-    // <div className="flex items-center gap-4">
     <Button
       variant="gradient"
       className="flex items-center gap-3 text-red-500"
@@ -431,10 +404,8 @@ const UserTablaComponet = () => {
       </svg>
       Editar Usuarios
     </Button>
-    // </div>
   );
   const updateUserPassword = () => (
-    // <div className="flex items-center gap-4">
     <Button
       variant="gradient"
       className="flex items-center gap-3 text-red-500"
@@ -456,7 +427,6 @@ const UserTablaComponet = () => {
       </svg>
       Cambiar Contrasena Usuarios
     </Button>
-    // </div>
   );
 
   const handleEditClick = (id) => {
@@ -474,7 +444,6 @@ const UserTablaComponet = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    // router.push("/pages/usertablas");
   };
   const handleOpenModalPassword = () => {
     setModalOpen(true);
@@ -515,7 +484,6 @@ const UserTablaComponet = () => {
             className="mr-3 h-10 w-8"
             onClick={() => {
               setModalOpen(false);
-              // handleCloseModal();
             }}
           >
             <path
@@ -566,9 +534,9 @@ const UserTablaComponet = () => {
             />
           </svg>
         </div>
-        <UpdatePassword userId={selectedPasswordId} urltable={urltable} />
+        <ResetPassword userId={selectedPasswordId} urltable={urltable} />
       </Dialog>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
         <MUIDataTable
           title={<ButtonGroup>{createUser()}</ButtonGroup>}
           data={usersData}
@@ -580,4 +548,4 @@ const UserTablaComponet = () => {
   );
 };
 
-export default UsersTablas;
+export default UserTablaComponet;

@@ -11,14 +11,14 @@ export default function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ username: "", password: "" });
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState(null);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -32,7 +32,7 @@ export default function Login() {
         if (user.prioridad === 0) {
           router.push("/pages/updatepassword");
         } else if (user.prioridad === 1) {
-          router.push("/pages/userstablas");
+          router.push("/pages/dashboardclient/viviendanueva");
         }
 
         guardarUserId(user.id);

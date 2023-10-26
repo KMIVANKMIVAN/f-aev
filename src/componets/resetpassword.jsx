@@ -8,19 +8,19 @@ import { useRouter } from "next/navigation";
 
 import { Alert } from "@material-tailwind/react";
 
-export default function UpdatePassword({ userId, urltable }) {
+export default function ResetPassword({ userId, urltable }) {
   const router = useRouter();
   const passwordId = userId;
 
   const [formData, setFormData] = useState({ password: "" });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -96,12 +96,6 @@ export default function UpdatePassword({ userId, urltable }) {
               La Contraseña fue Reseteada
             </Alert>
           )}
-          {/* <button
-            type="submit"
-            className=" rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Resetear Contraseña
-          </button> */}
         </div>
       </form>
     </div>

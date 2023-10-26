@@ -2,10 +2,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import ProtectedRoute from "../../../componets/protectedroute";
-
-import { obtenerToken } from "../../../utils/auth";
-import { obtenerUserId } from "../../../utils/userdata";
+import { obtenerToken } from "../utils/auth";
+import { obtenerUserId } from "../utils/userdata";
 
 import { useRouter } from "next/navigation";
 
@@ -83,12 +81,12 @@ export default function UpdatePassword() {
         console.error("Error:", error);
       }
     } else {
-      setError2("Las contraseñas no coinciden"); // Renderiza el mensaje de error
+      setError2("Las contraseñas no coinciden");
     }
   };
 
   return (
-    <ProtectedRoute>
+    <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -188,6 +186,6 @@ export default function UpdatePassword() {
           <p className="text-red-500 text-lg text-center">{error}</p>
         </div>
       </div>
-    </ProtectedRoute>
+    </>
   );
 }

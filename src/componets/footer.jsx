@@ -1,10 +1,7 @@
 "use client";
-import Head from "next/head";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function Footer() {
-  const [navbar, setNavbar] = useState(false);
   return (
     <div className="mt-5">
       <div className="shadow-inner grow p-5 text-center bg-white font-bold text-blue-900">
