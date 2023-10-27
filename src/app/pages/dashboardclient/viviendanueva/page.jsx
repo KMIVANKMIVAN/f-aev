@@ -36,29 +36,30 @@ const ViviendaNueva = () => {
 
   useEffect(() => {
     const fetchData2 = async () => {
-      try {
-        // const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/contcod/${selectedContCod}`;
-        const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/contcod/C-AEV-01-000055`;
-        const token = obtenerToken();
+      if (selectedContCod) {
+        try {
+          const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/contcod/${selectedContCod}`;
+          const token = obtenerToken();
 
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
+          const headers = {
+            Authorization: `Bearer ${token}`,
+          };
 
-        const response = await axios.get(url, { headers });
+          const response = await axios.get(url, { headers });
 
-        if (response.status === 200) {
-          setContcodData(response.data);
-        } else {
-          console.error("Error fetching user data");
+          if (response.status === 200) {
+            setContcodData(response.data);
+          } else {
+            console.error("Error fetching user data");
+          }
+        } catch (error) {
+          console.error("Error:", error);
         }
-      } catch (error) {
-        console.error("Error:", error);
       }
     };
 
     fetchData2();
-  }, []);
+  }, [selectedContCod]);
 
   const columns = useMemo(
     () => [
@@ -162,50 +163,46 @@ const ViviendaNueva = () => {
     []
   );
 
-  console.log("1111 " + selectedContCod);
+  // console.log("");
+  console.log(
+    "111 " + (contcodData[0] ? contcodData[0].proy_des : "No data available")
+  );
 
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
+        <p className="text-mi-color-primario text-2xl font-bold">
+          Generacion Instruccion de Desembolso Vivienda Nueva
+        </p>
         <MaterialReactTable
           columns={columns}
           data={datoscontratoData}
+          initialState={{ density: "compact", showColumnFilters: true }}
           enableFacetedValues
-          initialState={{ showColumnFilters: true }}
           muiTableBodyRowProps={({ row }) => ({
             onClick: (event) => {
-              // Manejador de clic en fila
               setSelectedContCod(row.original.cont_cod);
             },
             sx: {
-              cursor: "pointer", // Cambiar el cursor al hacer clic
+              cursor: "pointer",
             },
           })}
         />
       </div>
-      <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-        <MaterialReactTable
-          columns={columns2}
-          data={contcodData}
-          enableFacetedValues
-          initialState={{ showColumnFilters: true }}
-        />
-      </div>
-      {/* {selectedContCod && (
-        <div>
-          Cont_cod seleccionado: {selectedContCod}
-        </div>
-      } */}
-      {/* {selectedContCod && (
+      {contcodData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
+          <p className="text-mi-color-secundario text-2xl font-bold">
+            Detalle:{" "} {contcodData[0].proy_des}
+            {/* Detalle:{contcodData.proy_des} */}
+          </p>
           <MaterialReactTable
-          columns={columns2}
-          data={contcodData}
-          enableFacetedValues
-          initialState={{ showColumnFilters: true }}
-        />
+            columns={columns2}
+            data={contcodData}
+            enableFacetedValues
+            initialState={{ density: "compact", showColumnFilters: true }}
+          />
         </div>
-      )} */}
+      )}
     </>
   );
 };
