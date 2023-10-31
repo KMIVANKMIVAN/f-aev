@@ -21,6 +21,9 @@ module.exports = {
         "mi-color-quintario": "#4c5aea",
         "mi-color-sextario": "#44a4a6",
       },
+      zIndex: {
+        "500": "500",
+      },
     },
   },
   plugins: [],

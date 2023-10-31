@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/pages/userstablas", ".navbarmodelo", "src/componets/footer.jsx", "src/componets/login.jsx", "src/componets/navbar.jsx", "src/componets/sidebar.jsx", "src/componets/resetpassword.jsx", "src/componets/updateuser.jsx", "src/app/pages/dashboard/layout.tsx", "src/app/pages/dashboard/page.jsx", "src/componets/usertablacomponent.jsx", "src/app/pages/dashboard/userstablas/page.jsx", "src/app/pages/dashboard/usertablas/page.jsx", "src/componets/updatepassword.jsx", "src/app/pages/updatepassword/page.jsx", "src/app/pages/dashboard/registeruser/page.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/pages/userstablas", ".navbarmodelo", "src/componets/footer.jsx", "src/componets/login.jsx", "src/componets/navbar.jsx", "src/componets/sidebar.jsx", "src/componets/resetpassword.jsx", "src/componets/updateuser.jsx", "src/app/pages/dashboard/layout.tsx", "src/app/pages/dashboard/page.jsx", "src/componets/usertablacomponent.jsx", "src/app/pages/dashboard/userstablas/page.jsx", "src/app/pages/dashboard/usertablas/page.jsx", "src/componets/updatepassword.jsx", "src/app/pages/updatepassword/page.jsx", "src/app/pages/dashboard/registeruser/page.jsx", "src/app/pages/pruebas/page.jsx"],
   "exclude": ["node_modules"]
 }

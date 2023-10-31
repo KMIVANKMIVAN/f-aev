@@ -4,6 +4,8 @@ import { MaterialReactTable } from "material-react-table";
 import axios from "axios";
 import { obtenerToken } from "../../../../utils/auth";
 
+import SubirPdf from "../../../../componets/subirpdf";
+
 const ViviendaNueva = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
   const [contcodData, setContcodData] = useState([]);
@@ -111,6 +113,42 @@ const ViviendaNueva = () => {
   const columns2 = useMemo(
     () => [
       {
+        enableColumnFilter: false,
+        header: "SUBIR ARCHIVO",
+        filterVariant: "text", // default
+        size: 100,
+        Cell: ({ row }) => (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <SubirPdf />
+          </div>
+        ),
+      },
+      {
+        enableColumnFilter: false,
+        header: "SUBIR ARCHIVO BANCO",
+        filterVariant: "text", // default
+        size: 100,
+        Cell: ({ row }) => (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <SubirPdf />
+          </div>
+        ),
+      },
+      {
         accessorKey: "ploc_des",
         enableColumnFilter: false,
         header: "OBJETO",
@@ -163,11 +201,6 @@ const ViviendaNueva = () => {
     []
   );
 
-  // console.log("");
-  console.log(
-    "111 " + (contcodData[0] ? contcodData[0].proy_des : "No data available")
-  );
-
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
@@ -192,7 +225,7 @@ const ViviendaNueva = () => {
       {contcodData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
           <p className="text-mi-color-secundario text-2xl font-bold">
-            Detalle:{" "} {contcodData[0].proy_des}
+            Detalle: {contcodData[0].proy_des}
             {/* Detalle:{contcodData.proy_des} */}
           </p>
           <MaterialReactTable
