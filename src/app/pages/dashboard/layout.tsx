@@ -8,10 +8,10 @@ function Submenu() {
   const router = useRouter();
 
   return (
-    <ul className="pl-3 pt-1 text-sm">
+    <ul className="pl-3 pt-1 text-white text-sm">
       <li className="rounded-sm">
         <div
-          className="flex items-center p-2 space-x-3  hover:bg-c2p bg-c3p rounded-md"
+          className="flex items-center p-2 space-x-3  hover:bg-c4p2 bg-c3p2 rounded-md"
           onClick={() => router.push("/pages/dashboardclient/viviendanueva")}
         >
           <button>Vivienda Nueva</button>
@@ -19,7 +19,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>PMAR</button>
@@ -27,7 +27,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>Otros Pagos</button>
@@ -35,7 +35,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>Comunidades Urbanas</button>
@@ -43,7 +43,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>Pagos Extraordinarios/Ordinarios</button>
@@ -51,7 +51,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>Incorporacion de Recursos</button>
@@ -59,7 +59,7 @@ function Submenu() {
       </li>
       <li className="rounded-sm pt-1">
         <div
-          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c2p bg-c3p"
+          className="flex items-center p-2 space-x-3 rounded-md hover:bg-c4p2 bg-c3p2"
           onClick={() => router.push("/submenu-option-2")}
         >
           <button>Otros Pagos (Estudios)</button>
@@ -80,7 +80,7 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <div className="flex-row lg:flex">
-        <div className="flex flex-col w-full p-3 bg-c1p shadow lg:h-screen lg:w-72">
+        <div className="flex flex-col w-full p-3 bg-c1p2 shadow lg:h-screen lg:w-72">
           <div className="space-y-3">
             <div className="flex items-center">
               <h2 className="text-xl text-white font-bold">Menu</h2>
@@ -89,7 +89,7 @@ export default function DashboardLayout({
               <ul className="pt-2 pb-4 space-y-1 text-sm">
                 <li className="rounded-sm">
                   <div
-                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c3p bg-c2p"
+                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c4p2 bg-c2p2"
                     onClick={() => setSubmenuOpen(!submenuOpen)}
                   >
                     <svg
@@ -112,7 +112,7 @@ export default function DashboardLayout({
                 </li>
                 <li className="rounded-sm">
                   <div
-                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c3p bg-c2p"
+                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c4p2 bg-c2p2"
                     onClick={() => router.push("/mail")}
                   >
                     <svg
@@ -134,7 +134,7 @@ export default function DashboardLayout({
                 </li>
                 <li className="rounded-sm">
                   <div
-                    className="flex items-center p-2 space-x-3  rounded-md text-white hover:bg-c3p bg-c2p"
+                    className="flex items-center p-2 space-x-3  rounded-md text-white hover:bg-c4p2 bg-c2p2"
                     onClick={() => router.push("/mail")}
                   >
                     <svg
@@ -156,7 +156,7 @@ export default function DashboardLayout({
                 </li>
                 <li className="rounded-sm">
                   <div
-                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c3p bg-c2p"
+                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c4p2 bg-c2p2"
                     onClick={() => router.push("/mail")}
                   >
                     <svg
@@ -183,7 +183,7 @@ export default function DashboardLayout({
                 </li>
                 <li className="rounded-sm">
                   <div
-                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c3p bg-c2p"
+                    className="flex items-center p-2 space-x-3 rounded-md text-white hover:bg-c4p2 bg-c2p2"
                     onClick={() => {
                       eliminarToken();
                       window.location.href = "/";

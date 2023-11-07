@@ -6,236 +6,68 @@ import { obtenerToken } from "../../../../utils/auth";
 
 import SubirPdf from "../../../../componets/subirpdf";
 
+import BuscarcodigoCompoment from "../../../../componets/buscarcodigocompoment";
+import BuscardepartamentoCompoment from "../../../../componets/buscardepartamentocompoment";
+import BuscarproyectoCompoment from "../../../../componets/buscarproyectocompoment";
+import ViviendanuevaTablaComponent from "../../../../componets/viviendanuevatablacomponent";
+import ViviendanuevaTabl from "../../../../componets/viviendanuevatabl";
+
+import Button from "@mui/material/Button";
+import SendIcon from "@mui/icons-material/Send";
+import Stack from "@mui/material/Stack";
 const ViviendaNueva = () => {
-  const [datoscontratoData, setDatoscontratoData] = useState([]);
-  const [contcodData, setContcodData] = useState([]);
-  const [selectedContCod, setSelectedContCod] = useState(null);
+  const [showUserTabla, setShowUserTabla] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/findAllDatosContrato`;
-        const token = obtenerToken();
-
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
-        const response = await axios.get(url, { headers });
-
-        if (response.status === 200) {
-          setDatoscontratoData(response.data);
-        } else {
-          console.error("Error fetching user data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData2 = async () => {
-      if (selectedContCod) {
-        try {
-          const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/contcod/${selectedContCod}`;
-          const token = obtenerToken();
-
-          const headers = {
-            Authorization: `Bearer ${token}`,
-          };
-
-          const response = await axios.get(url, { headers });
-
-          if (response.status === 200) {
-            setContcodData(response.data);
-          } else {
-            console.error("Error fetching user data");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      }
-    };
-
-    fetchData2();
-  }, [selectedContCod]);
-
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "proy_cod",
-        header: "CODIGO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "cont_des",
-        header: "PROYECTO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "montocontrato",
-        header: "MONTO CONTRATO Bs.",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "inst_des",
-        header: "EMPRESA",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "bole_fechav",
-        header: "ULTIMA BOLETA",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "etap_cod",
-        header: "ESTADO SAP",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "depa_des",
-        header: "DEPARTAMENTO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-    ],
-    []
-  );
-  const columns2 = useMemo(
-    () => [
-      {
-        enableColumnFilter: false,
-        header: "SUBIR ARCHIVO",
-        filterVariant: "text", // default
-        size: 100,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <SubirPdf />
-          </div>
-        ),
-      },
-      {
-        enableColumnFilter: false,
-        header: "SUBIR ARCHIVO BANCO",
-        filterVariant: "text", // default
-        size: 100,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <SubirPdf />
-          </div>
-        ),
-      },
-      {
-        accessorKey: "ploc_des",
-        enableColumnFilter: false,
-        header: "OBJETO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "modificatorio",
-        enableColumnFilter: false,
-        header: "CONTRATO MODIFICATORIO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "planillado",
-        enableColumnFilter: false,
-        header: "AVANCE FISICO Bs.",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "retencion_anticipo",
-        enableColumnFilter: false,
-        header: "DESCUENTO ANTICIPO / RETENCION Bs.",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "multas",
-        enableColumnFilter: false,
-        header: "DESCUENTO MULTAS Bs.",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "desembolso",
-        enableColumnFilter: false,
-        header: "MONTO A DESEMBOLSAR Bs.",
-        filterVariant: "text", // default
-        size: 100,
-      },
-      {
-        accessorKey: "planillado",
-        enableColumnFilter: false,
-        header: "DESEMBOLSADO",
-        filterVariant: "text", // default
-        size: 100,
-      },
-    ],
-    []
-  );
-
+  const toggleUserTabla = () => {
+    setShowUserTabla(!showUserTabla);
+  };
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-        <p className="text-mi-color-primario text-2xl font-bold">
-          Generacion Instruccion de Desembolso Vivienda Nueva
-        </p>
-        <MaterialReactTable
-          columns={columns}
-          data={datoscontratoData}
-          initialState={{ density: "compact", showColumnFilters: true }}
-          enableFacetedValues
-          muiTableBodyRowProps={({ row }) => ({
-            onClick: (event) => {
-              setSelectedContCod(row.original.cont_cod);
-            },
-            sx: {
-              cursor: "pointer",
-            },
-          })}
-        />
-      </div>
-      {contcodData.length > 0 && (
-        <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-          <p className="text-mi-color-secundario text-2xl font-bold">
-            Detalle: {contcodData[0].proy_des}
-            {/* Detalle:{contcodData.proy_des} */}
-          </p>
-          <MaterialReactTable
-            columns={columns2}
-            data={contcodData}
-            enableFacetedValues
-            initialState={{ density: "compact", showColumnFilters: true }}
-          />
+      <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
+        <h1 className="py-3 text-center text-mi-color-secundario text-2xl font-bold">
+          Opciones de Búsqueda
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="col-span-1">
+            <BuscarcodigoCompoment />
+          </div>
+          <div className="col-span-1">
+            <BuscardepartamentoCompoment />
+          </div>
+          <div className="col-span-1">
+            <h2 className="p-3 text-mi-color-terceario text-1xl font-bold">
+              Ver todos los Registros
+            </h2>
+            <Stack
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+                width: 400,
+                margin: "0 auto", // Agregamos esta propiedad para centrar horizontalmente
+              }}
+            >
+              <Button
+                onClick={toggleUserTabla}
+                // className="bg-mi-color-terceario"
+                style={{
+                  backgroundColor: "#0058a9",
+                  color: "#ffffff",
+                }}
+                endIcon={<SendIcon />}
+              >
+                Mostrar
+              </Button>
+            </Stack>
+          </div>
+          <div className="col-span-1">
+            <BuscarproyectoCompoment />
+          </div>
         </div>
-      )}
+      </div>
+      <br />
+      {showUserTabla && <ViviendanuevaTablaComponent />}
+      {/* <ViviendanuevaTabl /> */}
     </>
   );
 };
