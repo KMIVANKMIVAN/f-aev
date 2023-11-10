@@ -1,41 +1,149 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
+import TextField from "@mui/material/TextField";
+
+import Button from "@mui/material/Button";
+
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 
-import SubirPdf from "./subirpdf";
-
-const ViviendanuevaTabl = () => {
+const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
+  const [buscar, setBuscar] = useState(""); // Estado para guardar el valor concatenado
   const [contcodData, setContcodData] = useState([]);
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [selectedContCod, setSelectedContCod] = useState(null);
 
+  const [textoFinal, setTextoFinal] = useState(""); // Estado para guardar la concatenación
+
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const [hasInput, setHasInput] = useState(false);
+
+  useEffect(() => {
+    const textParts = [];
+
+    if (buscar.codigo) {
+      textParts.push(`codigo>${buscar.codigo}<`);
+    }
+
+    if (buscar.nomproy) {
+      textParts.push(`<nomproy>${buscar.nomproy}<`);
+    }
+
+    if (buscar.depdes) {
+      textParts.push(`<depdes>${buscar.depdes}`);
+    }
+
+    const finalText = textParts.join("");
+
+    // Reemplaza cualquier secuencia de '<<' por '<'
+    setTextoFinal(finalText.replace(/<<+/g, "<"));
+  }, [buscar]);
   /* useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/findAllDatosContrato`;
-        const token = obtenerToken();
-
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
-        const response = await axios.get(url, { headers });
-
-        if (response.status === 200) {
-          setDatoscontratoData(response.data);
+    const concatenatedText = Object.entries(buscar)
+      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
+      .map(([key, value]) => {
+        if (key === "codigo") {
+          return `${key}>${value}<`;
         } else {
-          console.error("Error fetching user data");
+          return `<${key}>${value}`;
         }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
+      })
+      .join("");
 
-    fetchData();
-  }, []); */
+    // Verifica si existe un valor en la propiedad 'nomproy' y agrega '<' al final si es el caso
+    const finalText = buscar.nomproy
+      ? concatenatedText + "<"
+      : concatenatedText;
+
+    // Reemplaza cualquier secuencia de '<<' por '<'
+    setTextoFinal(finalText.replace(/<<+/g, "<"));
+  }, [buscar]); */
+  /* useEffect(() => {
+    const concatenatedText = Object.entries(buscar)
+      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
+      .map(([key, value]) => {
+        if (key === "codigo") {
+          return `${key}>${value}<`;
+        } else {
+          return `<${key}>${value}`;
+        }
+      })
+      .join("");
+
+    const finalText = concatenatedText.replace(/<<+/g, "<");
+    setTextoFinal(finalText);
+  }, [buscar]); */
+
+  /* useEffect(() => {
+    const concatenatedText = Object.entries(buscar)
+      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
+      .map(([key, value]) => `${key}${value}`)
+      .join("");
+
+    setTextoFinal(concatenatedText);
+  }, [buscar]); */
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    // const modifiedValue = name === "nomproy" ? `${value}<` : value;
+    setBuscar((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleSearch = async () => {
+    console.log("Realizando la solicitud GET con valores:", textoFinal);
+    try {
+      /*  if (Object.values(buscar).every((value) => value.trim() === "")) {
+        return;
+      }
+
+      const concatenatedText = Object.entries(buscar)
+        .filter(([, value]) => value.trim() !== "")
+        .map(([key, value]) => {
+          if (key === "codigo") {
+            return `<${key}>${value}<`;
+          } else {
+            return `<${key}>${value}`;
+          }
+        })
+        .join("")
+        .replace(/<<+/g, "<"); */
+
+      /* if (!hasInput) {
+        // No realiza la búsqueda si no se ha introducido al menos una letra
+        return;
+      }
+
+      if (Object.values(buscar).every((value) => value.trim() === "")) {
+        return;
+      }
+ */
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/buscar/${textoFinal}`;
+      const token = obtenerToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.get(url, { headers });
+
+      if (response.status === 200) {
+        setDatoscontratoData(response.data);
+        setIsDataLoaded(true); // Marca los datos como cargados
+      } else {
+        console.error("Error fetching user data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  console.log("111 ", buscar);
+  console.log("222 ", textoFinal);
 
   useEffect(() => {
     const fetchData2 = async () => {
@@ -544,30 +652,100 @@ const ViviendanuevaTabl = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-        <p className="text-mi-color-primario text-2xl font-bold">
-          Generacion Instruccion de Desembolso Vivienda Nueva
-        </p>
-        <MaterialReactTable
-          columns={columns}
-          data={datoscontratoData}
-          initialState={{ density: "compact", showColumnFilters: true }}
-          enableFacetedValues
-          muiTableBodyRowProps={({ row }) => ({
-            onClick: (event) => {
-              setSelectedContCod(row.original.cont_cod);
-            },
-            sx: {
-              cursor: "pointer",
-            },
-          })}
-        />
+      <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
+        <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">
+          Buscar
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="col-span-1 flex justify-center">
+            <TextField
+              name="codigo"
+              helperText="Ejemplo: AEV-LP-0000"
+              id="standard-basic"
+              label="Codigo de Proyecto:"
+              variant="standard"
+              className="w-full"
+              value={buscar.codigo || ""}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col-span-1 flex justify-center">
+            <TextField
+              name="nomproy"
+              helperText="Ejemplo: CONSTRUCCION DE..."
+              id="standard-basic"
+              label="Nombre de Proyecto:"
+              variant="standard"
+              className="w-full"
+              value={buscar.nomproy || ""}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col-span-1 flex justify-center">
+            <TextField
+              name="depdes"
+              helperText="Ejemplo: La Paz"
+              id="standard-basic"
+              label="Departamento del Proyecto:"
+              variant="standard"
+              className="w-full"
+              value={buscar.depdes || ""}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+        <div className="flex justify-center pt-5">
+          <Button variant="outlined" onClick={handleSearch}>
+            <span className="mr-2">Buscar</span>{" "}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </Button>
+        </div>
       </div>
+      {isDataLoaded && (
+        <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
+          <p className="text-mi-color-primario text-2xl font-bold">
+            Generacion Instruccion de Desembolso Vivienda Nueva
+          </p>
+          <MaterialReactTable
+            // showColumnFilters={false}
+            enableHiding={false}
+            enableGlobalFilter={false}
+            enableColumnActions={false}
+            enableColumnFilters={false}
+            enablePagination={false}
+            enableSorting={false}
+            columns={columns}
+            data={datoscontratoData}
+            initialState={{ density: "compact", showColumnFilters: true }}
+            enableFacetedValues
+            muiTableBodyRowProps={({ row }) => ({
+              onClick: (event) => {
+                setSelectedContCod(row.original.cont_cod);
+              },
+              sx: {
+                cursor: "pointer",
+              },
+            })}
+          />
+        </div>
+      )}
       {contcodComplejaData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
           <p className="text-mi-color-secundario text-2xl font-bold">
             Detalle: {contcodData[0].proy_des}
-            {/* Detalle:{contcodData.proy_des} */}
           </p>
           <MaterialReactTable
             columns={columns3}
@@ -581,4 +759,4 @@ const ViviendanuevaTabl = () => {
   );
 };
 
-export default ViviendanuevaTabl;
+export default BuscarViviend;
