@@ -10,10 +10,12 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const SubirPdf = () => {
+const SubirPdf = ({ nombreidpdf }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
   const [sucess, setSucess] = useState(null);
+
+  console.log("aver si llego el nombreidpdf", nombreidpdf);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -31,7 +33,7 @@ const SubirPdf = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/upload`,
+        `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/upload/${nombreidpdf}`,
         formData,
         {
           headers: {

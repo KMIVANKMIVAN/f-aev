@@ -4,18 +4,19 @@ import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import { useRouter } from "next/navigation";
 
+import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import SaveIcon from "@mui/icons-material/Save";
 
 const ActualizarUser = ({ userId, urltable }) => {
   console.log("estoy en actualizar");
   console.log(userId);
   console.log("la url llega?");
   console.log(urltable);
+
+  /* const parametro1 = "valor1";
+  const parametro2 = "valor2";
+  const urltable2 = `/${urltable}?parametro1=${parametro1}&parametro2=${parametro2}`; */
 
   const router = useRouter();
   const token = obtenerToken();
@@ -108,7 +109,6 @@ const ActualizarUser = ({ userId, urltable }) => {
 
   return (
     <>
-      <h2>ACTUALIZAR USUARIO</h2>
       {userData.username !== "" && (
         <form className="space-y-1" onSubmit={handleSubmitUpdate}>
           <div className="grid grid-cols-1 md:grid-cols-2 pb-2 gap-4">
@@ -341,31 +341,21 @@ const ActualizarUser = ({ userId, urltable }) => {
             </div>
             <div></div>
           </div>
-          <Button
-            type="submit"
-            onClick={handleButtonClick}
-            style={{
-              color: "green",
-              fontWeight: "bold",
-              transition: "color 0.3s",
-            }}
-            onMouseOver={(e) => (e.target.style.color = "darkgreen")}
-            onMouseOut={(e) => (e.target.style.color = "green")}
-          >
-            Guardar
-          </Button>
-          {expanded && (
-            <p
-              className="bg-green-600 py-2 md:mx-16 text-center text-white"
+          <Stack spacing={2} direction="row">
+            <Button
               variant="outlined"
+              type="submit"
+              onClick={handleButtonClick}
+              color="success"
             >
-              El Usuario Fue Actualizado
-            </p>
-          )}
+              Guardar
+              <SaveIcon />
+            </Button>
+          </Stack>
         </form>
       )}
     </>
   );
 };
-
+//SaveIcon
 export default ActualizarUser;

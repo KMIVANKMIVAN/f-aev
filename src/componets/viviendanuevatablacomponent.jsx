@@ -453,17 +453,23 @@ const ViviendanuevaTablaComponent = () => {
           })}
         />
       </div>
+
+      <br />
       {contcodComplejaData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-          <p className="text-mi-color-secundario text-2xl font-bold">
-            Detalle: {contcodData[0].proy_des}
+          <p className="text-c1p text-2xl font-bold">
+            PROYECTO: {contcodComplejaData[0]?.objeto || ""}
+          </p>
+          <br />
+          <p className="text-c1p text-2xl font-bold">
+            CODIGO: {contcodComplejaData[0]?.proy_cod || ""}
           </p>
           <MaterialReactTable
             enableHiding={false}
             enableGlobalFilter={false}
             enableColumnActions={false}
             enableColumnFilters={false}
-            enablePagination={false}
+            // enablePagination={false}
             enableSorting={false}
             columns={columns3}
             data={contcodComplejaData}

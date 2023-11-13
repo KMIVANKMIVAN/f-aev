@@ -5,9 +5,6 @@ import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 import Button from "@mui/material/Button";
 
-import ActualizarUser from "./actualizaruser";
-import ResetearPassword from "./resetearpassword";
-
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 
@@ -24,6 +21,7 @@ const BuscarUser = ({ urltable }) => {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedHabilitado, setSelectedHabilitado] = useState(null);
   const [isActualizarUserVisible, setIsActualizarUserVisible] = useState(false);
 
   const handleInputChange = (event) => {
@@ -59,31 +57,6 @@ const BuscarUser = ({ urltable }) => {
     );
   };
 
-  const actualizarEstado = async (selectedUserIdHabilitado, nuevoEstado) => {
-    try {
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/${selectedUserIdHabilitado}`;
-      const token = obtenerToken();
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-
-      const response = await axios.patch(
-        url,
-        { habilitado: nuevoEstado },
-        { headers }
-      );
-
-      if (response.status === 200) {
-        router.push(urltable);
-      } else {
-        console.error("Error al actualizar el estado del usuario");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   const columnas = useMemo(
     () => [
       {
@@ -99,7 +72,10 @@ const BuscarUser = ({ urltable }) => {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Stack direction="row" spacing={2}>
               <Button
-                onClick={() => showActualizarUser(row.original.id)}
+                onClick={() => {
+                  showActualizarUser(row.original.id);
+                  setSelectedHabilitado(row.original.habilitado);
+                }}
                 variant="outlined"
                 size="small"
                 endIcon={<SendIcon size="small" />}
@@ -214,7 +190,13 @@ const BuscarUser = ({ urltable }) => {
 
   console.log("id", selectedUserId);
 
-  const AcordeonUserWrapper = ({ isVisible, userId, urltable, onHide }) => {
+  const AcordeonUserWrapper = ({
+    isVisible,
+    userId,
+    urltable,
+    onHide,
+    selectedHabilitado,
+  }) => {
     useEffect(() => {
       if (isVisible) {
         // Realiza aquí cualquier lógica de carga de datos o actualización necesaria
@@ -226,11 +208,14 @@ const BuscarUser = ({ urltable }) => {
         <AcordeonUser
           userId={userId}
           urltable={urltable}
+          selectedHabilitado={selectedHabilitado}
           hideActualizarUser={() => onHide(false)}
         />
       )
     );
   };
+
+  console.log("estoy en buscaruser", urltable);
 
   return (
     <>
@@ -277,6 +262,8 @@ const BuscarUser = ({ urltable }) => {
             enableFacetedValues
             initialState={{ density: "compact" }}
           />
+
+          <br />
         </div>
       )}
       {/* {isActualizarUserVisible && (
@@ -290,6 +277,7 @@ const BuscarUser = ({ urltable }) => {
         isVisible={isActualizarUserVisible}
         userId={selectedUserId}
         urltable={urltable}
+        selectedHabilitado={selectedHabilitado}
         onHide={setIsActualizarUserVisible}
       />
     </>

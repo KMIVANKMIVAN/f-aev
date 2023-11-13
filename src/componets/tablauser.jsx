@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
-import ActualizarUser from "./actualizaruser";
-import ResetearPassword from "./resetearpassword";
+import Stack from "@mui/material/Stack";
+import AcordeonUser from "./acordeonuser";
+
+import MarginIcon from "@mui/icons-material/Margin";
 
 const TablaUser = ({ urltable }) => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
@@ -16,30 +17,28 @@ const TablaUser = ({ urltable }) => {
   const [isActualizarUserVisible, setIsActualizarUserVisible] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users`;
-        const token = obtenerToken();
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
+  const [selectedHabilitado, setSelectedHabilitado] = useState(null);
 
-        const response = await axios.get(url, { headers });
+  const fetchData = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users`;
+      const token = obtenerToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
 
-        if (response.status === 200) {
-          setDatoscontratoData(response.data);
-          setIsDataLoaded(true);
-        } else {
-          console.error("Error fetching user data");
-        }
-      } catch (error) {
-        console.error("Error:", error);
+      const response = await axios.get(url, { headers });
+
+      if (response.status === 200) {
+        setDatoscontratoData(response.data);
+        setIsDataLoaded(true);
+      } else {
+        console.error("Error fetching user data");
       }
-    };
-
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const showActualizarUser = (userId) => {
     if (userId === selectedUserId) {
@@ -50,29 +49,6 @@ const TablaUser = ({ urltable }) => {
     }
   };
 
-  const actualizarEstado = async (selectedUserIdHabilitado, nuevoEstado) => {
-    try {
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/${selectedUserIdHabilitado}`;
-      const token = obtenerToken();
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-
-      const response = await axios.patch(
-        url,
-        { habilitado: nuevoEstado },
-        { headers }
-      );
-
-      if (response.status === 200) {
-        router.push(urltable);
-      } else {
-        console.error("Error al actualizar el estado del usuario");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
   const columnas = useMemo(
     () => [
       {
@@ -88,7 +64,10 @@ const TablaUser = ({ urltable }) => {
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Stack direction="row" spacing={2}>
               <Button
-                onClick={() => showActualizarUser(row.original.id)}
+                onClick={() => {
+                  showActualizarUser(row.original.id);
+                  setSelectedHabilitado(row.original.habilitado);
+                }}
                 variant="outlined"
                 size="small"
                 endIcon={<SendIcon size="small" />}
@@ -96,81 +75,6 @@ const TablaUser = ({ urltable }) => {
             </Stack>
           </div>
         ),
-      },
-      {
-        accessorKey: "actualizar",
-        header: "ACTUALIZAR",
-        muiTableHeadCellProps: {
-          align: "center",
-        },
-        muiTableBodyCellProps: {
-          align: "center",
-        },
-        Cell: ({ row }) =>
-          row.original.id === selectedUserId && isActualizarUserVisible ? (
-            <div>
-              <ActualizarUser
-                userId={selectedUserId}
-                urltable={urltable}
-                hideActualizarUser={() => setIsActualizarUserVisible(false)}
-              />
-            </div>
-          ) : null,
-      },
-      {
-        accessorKey: "resetearPassword",
-        header: "RESETEAR CONTRASEÑA",
-        size: 50,
-        muiTableHeadCellProps: {
-          align: "center",
-        },
-        muiTableBodyCellProps: {
-          align: "center",
-        },
-        Cell: ({ row }) =>
-          row.original.id === selectedUserId && isActualizarUserVisible ? (
-            <div>
-              <ResetearPassword
-                userId={selectedUserId}
-                hideActualizarUser={() => setIsActualizarUserVisible(false)}
-              />
-            </div>
-          ) : null,
-      },
-      {
-        accessorKey: "habilitado",
-        header: "HABILITAR / DESABILITAR",
-        size: 50,
-        muiTableHeadCellProps: {
-          align: "center",
-        },
-        muiTableBodyCellProps: {
-          align: "center",
-        },
-        Cell: ({
-          row: {
-            original: { id, habilitado },
-          },
-          value,
-        }) =>
-          id === selectedUserId && isActualizarUserVisible ? (
-            <div>
-              <button
-                className="bg-transparent hover:bg-stone-200 py-2 px-4"
-                style={{
-                  color: habilitado === 1 ? "red" : "green",
-                  border: `2px solid ${habilitado === 1 ? "red" : "green"}`,
-                  borderRadius: "5px",
-                }}
-                onClick={() => {
-                  const nuevoEstado = habilitado === 1 ? 0 : 1;
-                  actualizarEstado(id, nuevoEstado);
-                }}
-              >
-                {habilitado === 1 ? "Desabilitar" : "Habilitar"}
-              </button>
-            </div>
-          ) : null,
       },
       {
         accessorKey: "id",
@@ -278,9 +182,41 @@ const TablaUser = ({ urltable }) => {
 
   console.log("id", selectedUserId);
 
+  const AcordeonUserWrapper = ({
+    isVisible,
+    userId,
+    urltable,
+    onHide,
+    selectedHabilitado,
+  }) => {
+    useEffect(() => {
+      if (isVisible) {
+        // Realiza aquí cualquier lógica de carga de datos o actualización necesaria
+      }
+    }, [isVisible, userId, urltable]);
+
+    return (
+      isVisible && (
+        <AcordeonUser
+          userId={userId}
+          urltable={urltable}
+          selectedHabilitado={selectedHabilitado}
+          hideActualizarUser={() => onHide(false)}
+        />
+      )
+    );
+  };
+
+  const handleFetchDataClick = async () => {
+    await fetchData(); // Espera a que la función fetchData termine
+
+    // Una vez que la carga de datos está completa, actualiza el estado para ocultar el botón
+    setIsDataLoaded(true);
+  };
+
   return (
     <>
-      {isDataLoaded && (
+      {isDataLoaded ? (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
           <MaterialReactTable
             enableHiding={false}
@@ -294,8 +230,27 @@ const TablaUser = ({ urltable }) => {
             enableFacetedValues
             initialState={{ density: "compact" }}
           />
+
+          <br />
         </div>
+      ) : (
+        <Stack className="pl-7" spacing={2} direction="row">
+          <Button
+            onClick={handleFetchDataClick}
+            variant="outlined"
+            endIcon={<MarginIcon />}
+          >
+            Ver todos los Usuarios
+          </Button>
+        </Stack>
       )}
+      <AcordeonUserWrapper
+        isVisible={isActualizarUserVisible}
+        userId={selectedUserId}
+        urltable={urltable}
+        selectedHabilitado={selectedHabilitado}
+        onHide={setIsActualizarUserVisible}
+      />
     </>
   );
 };

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import ActualizarUser from "./actualizaruser";
 import ResetearPassword from "./resetearpassword";
+// import  from "./resetearpassword";
 
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -20,6 +21,12 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
+
+import SendIcon from "@mui/icons-material/Send";
+import Stack from "@mui/material/Stack";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -57,8 +64,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: "1px solid rgba(0, 0, 0, .125)",
 }));
 
-const AcordeonUser = ({ userId, urltable }) => {
-  const [expanded, setExpanded] = React.useState("panel1");
+const AcordeonUser = ({ userId, urltable, selectedHabilitado }) => {
+  const router = useRouter();
+
+  const [expanded, setExpanded] = useState("panel1");
+  const [value, setValue] = useState(0);
+
+  console.log("estoy en acordeonuse", urltable);
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -67,7 +79,7 @@ const AcordeonUser = ({ userId, urltable }) => {
   const handleButtonClick = () => {
     setExpanded(!expanded);
   };
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -80,6 +92,33 @@ const AcordeonUser = ({ userId, urltable }) => {
   useEffect(() => {
     handleClickOpen(); // Abre el Dialog cuando el componente se monta
   }, []); // El segundo argumento es un array vacío para que se ejecute solo una vez al montarse el componente
+
+  const actualizarEstado = async (selectedUserIdHabilitado, nuevoEstado) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users/${selectedUserIdHabilitado}`;
+      const token = obtenerToken();
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.patch(
+        url,
+        { habilitado: nuevoEstado },
+        { headers }
+      );
+
+      if (response.status === 200) {
+        console.log("por que no vas");
+
+        router.push(urltable);
+      } else {
+        console.error("Error al actualizar el estado del usuario");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
       <Dialog
@@ -88,9 +127,6 @@ const AcordeonUser = ({ userId, urltable }) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"ACTUALIZAR USUARIO"}
-        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <Accordion
@@ -101,11 +137,34 @@ const AcordeonUser = ({ userId, urltable }) => {
                 aria-controls="panel1d-content"
                 id="panel1d-header"
               >
-                <Typography>Collapsible Group Item #1</Typography>
+                <Typography>HABILITAR / DESABILITAR</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  <ActualizarUser userId={userId} urltable={urltable} />
+                  <div className="text-center" style={{ width: "100%" }}>
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        onClick={() => {
+                          const nuevoEstado = selectedHabilitado === 1 ? 0 : 1;
+                          actualizarEstado(userId, nuevoEstado);
+                        }}
+                        variant="outlined"
+                        color={
+                          selectedHabilitado === 1 ? "secondary" : "success"
+                        }
+                        endIcon={
+                          selectedHabilitado === 1 ? (
+                            <CheckIcon />
+                          ) : (
+                            <NotInterestedIcon />
+                          )
+                        }
+                        style={{ margin: "0 auto" }}
+                      >
+                        {selectedHabilitado === 1 ? "DESABILITAR" : "HABILITAR"}
+                      </Button>
+                    </Stack>
+                  </div>
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -117,15 +176,11 @@ const AcordeonUser = ({ userId, urltable }) => {
                 aria-controls="panel2d-content"
                 id="panel2d-header"
               >
-                <Typography>Collapsible Group Item #2</Typography>
+                <Typography>RESETAR CONTRASEÑA</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
+                  <ResetearPassword userId={userId} urltable={urltable} />
                 </Typography>
               </AccordionDetails>
             </Accordion>
@@ -134,18 +189,14 @@ const AcordeonUser = ({ userId, urltable }) => {
               onChange={handleChange("panel3")}
             >
               <AccordionSummary
-                aria-controls="panel3d-content"
-                id="panel3d-header"
+                aria-controls="panel2d-content"
+                id="panel2d-header"
               >
-                <Typography>Collapsible Group Item #3</Typography>
+                <Typography>ACTUALIZAR USUARIO</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
+                  <ActualizarUser userId={userId} urltable={urltable} />
                 </Typography>
               </AccordionDetails>
             </Accordion>

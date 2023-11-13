@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
+import SubirPdf from "./subirpdf";
 
 const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
@@ -13,6 +14,7 @@ const BuscarViviend = () => {
   const [contcodData, setContcodData] = useState([]);
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [selectedContCod, setSelectedContCod] = useState(null);
+  const [nombreidpdf, setNombreidpdf] = useState(null);
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -58,6 +60,7 @@ const BuscarViviend = () => {
 
           if (response.status === 200) {
             console.log("hola");
+            console.log(response.data);
             setContcodData(response.data);
           }
         } catch (error) {
@@ -89,6 +92,8 @@ const BuscarViviend = () => {
           const response = await axios.get(url, { headers });
 
           if (response.status === 200) {
+            console.log("123");
+            console.log(response.data);
             setContcodComplejaData(response.data);
           } else {
             console.error("Error fetching user data");
@@ -156,7 +161,7 @@ const BuscarViviend = () => {
               height: "100%",
             }}
           >
-            <SubirPdf />
+            <SubirPdf nombreidpdf={row.original.iddesem} />
           </div>
         ),
       },
@@ -172,7 +177,7 @@ const BuscarViviend = () => {
               height: "100%",
             }}
           >
-            <SubirPdf />
+            <SubirPdf nombreidpdf={row.original.iddesem} />
           </div>
         ),
       },
@@ -502,10 +507,15 @@ const BuscarViviend = () => {
           />
         </div>
       )}
+      <br />
       {contcodComplejaData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-          <p className="text-mi-color-secundario text-2xl font-bold">
-            Detalle: {contcodData[0].proy_des}
+          <p className="text-c1p text-2xl font-bold">
+            PROYECTO: {contcodComplejaData[0]?.objeto || ""}
+          </p>
+          <br />
+          <p className="text-c1p text-2xl font-bold">
+            CODIGO: {contcodComplejaData[0]?.proy_cod || ""}
           </p>
           <MaterialReactTable
             showColumnFilters={false}
@@ -513,7 +523,7 @@ const BuscarViviend = () => {
             enableGlobalFilter={false}
             enableColumnActions={false}
             enableColumnFilters={false}
-            enablePagination={false}
+            // enablePagination={false}
             enableSorting={false}
             columns={columns3}
             data={contcodComplejaData}
