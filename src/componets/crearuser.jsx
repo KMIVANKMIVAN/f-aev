@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
-import { useRouter } from "next/navigation";
-
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -11,7 +9,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Stack from "@mui/material/Stack";
-import SendIcon from "@mui/icons-material/Send";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 const CrearUser = ({ urltable }) => {
   const registerUserUrl = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/users`;
@@ -20,7 +17,6 @@ const CrearUser = ({ urltable }) => {
     Authorization: `Bearer ${token}`,
   };
 
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -28,12 +24,8 @@ const CrearUser = ({ urltable }) => {
     idOficina: "",
     dependencia: "",
     nombre: "",
-    // lastLogin: '',
-    // mosca: '',
     cargo: "",
     email: "",
-    // logins: '',
-    // fechaCreacion: '',
     habilitado: "",
     nivel: "",
     genero: "",
@@ -63,11 +55,6 @@ const CrearUser = ({ urltable }) => {
     }
   };
 
-  const [expanded, setExpanded] = useState(false);
-
-  const handleButtonClick = () => {
-    setExpanded(!expanded);
-  };
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -306,13 +293,12 @@ const CrearUser = ({ urltable }) => {
                   <select
                     id="expedido"
                     name="expedido"
-                    // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-indigo-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     className="text-white border border-gray-300 text-sm rounded-lg block w-full p-2.5 dark:bg-indigo-600"
                     required
                     value={formData.expedido}
                     onChange={(e) =>
                       setFormData({
-                        ...formData, // Copiar el estado actual
+                        ...formData,
                         expedido: e.target.value,
                       })
                     }
@@ -369,11 +355,10 @@ const CrearUser = ({ urltable }) => {
               onClick={handleClose}
               style={{
                 color: "red",
-                fontWeight: "bold", // Aumentamos el grosor del texto
-                // fontSize: "1rem",
-                transition: "color 0.3s", // Agregamos una transición suave
+                fontWeight: "bold",
+                transition: "color 0.3s",
               }}
-              onMouseOver={(e) => (e.target.style.color = "darkred")} // Cambiamos el color al pasar el mouse
+              onMouseOver={(e) => (e.target.style.color = "darkred")}
               onMouseOut={(e) => (e.target.style.color = "red")}
             >
               Cerrar
@@ -383,8 +368,7 @@ const CrearUser = ({ urltable }) => {
               onClick={handleClose}
               style={{
                 color: "green",
-                fontWeight: "bold", // Aumentamos el grosor del texto
-                // fontSize: "1rem",
+                fontWeight: "bold",
                 transition: "color 0.3s",
               }}
               onMouseOver={(e) => (e.target.style.color = "darkgreen")}

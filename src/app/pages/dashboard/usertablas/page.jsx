@@ -39,7 +39,6 @@ const UserTablas = () => {
         </div>
       </div>
       {showUserTabla && <TablaUser urltable={urltable} />}
-      {/* <TablaUser urltable={urltable} /> */}
     </>
   );
 };

@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { eliminarToken } from "../../../utils/auth";
 import ProtectedRoute from "../../../componets/protectedroute";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function Submenu() {
   const router = useRouter();

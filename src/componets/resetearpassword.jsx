@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-import { Alert } from "@material-tailwind/react";
 
 const ResetearPassword = ({ userId, urltable }) => {
   console.log("estoy en actualizar");
@@ -132,11 +131,10 @@ const ResetearPassword = ({ userId, urltable }) => {
               onClick={handleClose}
               style={{
                 color: "red",
-                fontWeight: "bold", // Aumentamos el grosor del texto
-                // fontSize: "1rem",
-                transition: "color 0.3s", // Agregamos una transición suave
+                fontWeight: "bold",
+                transition: "color 0.3s",
               }}
-              onMouseOver={(e) => (e.target.style.color = "darkred")} // Cambiamos el color al pasar el mouse
+              onMouseOver={(e) => (e.target.style.color = "darkred")}
               onMouseOut={(e) => (e.target.style.color = "red")}
             >
               Cerrar
@@ -146,8 +144,7 @@ const ResetearPassword = ({ userId, urltable }) => {
               onClick={(handleButtonClick, handleClose)}
               style={{
                 color: "green",
-                fontWeight: "bold", // Aumentamos el grosor del texto
-                // fontSize: "1rem",
+                fontWeight: "bold",
                 transition: "color 0.3s",
               }}
               onMouseOver={(e) => (e.target.style.color = "darkgreen")}

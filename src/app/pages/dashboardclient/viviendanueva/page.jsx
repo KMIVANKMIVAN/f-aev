@@ -1,17 +1,11 @@
 "use client";
-import React, { useMemo, useState, useEffect } from "react";
-import { MaterialReactTable } from "material-react-table";
-import axios from "axios";
-import { obtenerToken } from "../../../../utils/auth";
-
-import SubirPdf from "../../../../componets/subirpdf";
+import React, { useState } from "react";
 
 import ViviendanuevaTablaComponent from "../../../../componets/viviendanuevatablacomponent";
 
 import BuscarViviend from "../../../../componets/buscarviviend";
 
 import Button from "@mui/material/Button";
-import SendIcon from "@mui/icons-material/Send";
 import Stack from "@mui/material/Stack";
 import MarginIcon from "@mui/icons-material/Margin";
 

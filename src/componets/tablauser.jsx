@@ -6,8 +6,6 @@ import { obtenerToken } from "../utils/auth";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import SendIcon from "@mui/icons-material/Send";
-import UpdateUser from "./updateuser";
-import ResetPassword from "./resetpassword";
 import ActualizarUser from "./actualizaruser";
 import ResetearPassword from "./resetearpassword";
 
@@ -31,7 +29,7 @@ const TablaUser = ({ urltable }) => {
 
         if (response.status === 200) {
           setDatoscontratoData(response.data);
-          setIsDataLoaded(true); // Marca los datos como cargados
+          setIsDataLoaded(true);
         } else {
           console.error("Error fetching user data");
         }
@@ -177,121 +175,101 @@ const TablaUser = ({ urltable }) => {
       {
         accessorKey: "id",
         header: "ID",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "habilitado",
         header: "HABILITADO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "username",
         header: "USUARIO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "superior",
         header: "SUPERIOR",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "nombre",
         header: "NOMBRES",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "nivel",
         header: "NIVEL",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "prioridad",
         header: "PRIORIDAD/GENERICA",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "id_oficina",
         header: "ID DE OFICINA",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "dependencia",
         header: "DEPENDENCIA",
-        filterVariant: "text", // default
         size: 100,
       },
       {
         accessorKey: "last_login",
         header: "LAST LOGIN",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "mosca",
         header: "MOSCA",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "cargo",
         header: "CARGO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "email",
         header: "CORREO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "logins",
         header: "LOGIN",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "fecha_creacion",
         header: "FECHA DE CREACION",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "genero",
         header: "GENERO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "id_entidad",
         header: "ID ENTIDAD",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "cedula_identidad",
         header: "CEDULA IDENTIDAD",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "expedido",
         header: "EXPENDIO",
-        filterVariant: "text", // default
         size: 50,
       },
       {
         accessorKey: "super",
         header: "SUPER",
-        filterVariant: "text", // default
         size: 50,
       },
     ],

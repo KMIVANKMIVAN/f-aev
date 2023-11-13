@@ -2,7 +2,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import TextField from "@mui/material/TextField";
-
 import Button from "@mui/material/Button";
 
 import axios from "axios";
@@ -10,120 +9,22 @@ import { obtenerToken } from "../utils/auth";
 
 const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
-  const [buscar, setBuscar] = useState(""); // Estado para guardar el valor concatenado
+  const [buscar, setBuscar] = useState("");
   const [contcodData, setContcodData] = useState([]);
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [selectedContCod, setSelectedContCod] = useState(null);
 
-  const [textoFinal, setTextoFinal] = useState(""); // Estado para guardar la concatenación
-
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  const [hasInput, setHasInput] = useState(false);
-
-  useEffect(() => {
-    const textParts = [];
-
-    if (buscar.codigo) {
-      textParts.push(`codigo>${buscar.codigo}<`);
-    }
-
-    if (buscar.nomproy) {
-      textParts.push(`<nomproy>${buscar.nomproy}<`);
-    }
-
-    if (buscar.depdes) {
-      textParts.push(`<depdes>${buscar.depdes}`);
-    }
-
-    const finalText = textParts.join("");
-
-    // Reemplaza cualquier secuencia de '<<' por '<'
-    setTextoFinal(finalText.replace(/<<+/g, "<"));
-  }, [buscar]);
-  /* useEffect(() => {
-    const concatenatedText = Object.entries(buscar)
-      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
-      .map(([key, value]) => {
-        if (key === "codigo") {
-          return `${key}>${value}<`;
-        } else {
-          return `<${key}>${value}`;
-        }
-      })
-      .join("");
-
-    // Verifica si existe un valor en la propiedad 'nomproy' y agrega '<' al final si es el caso
-    const finalText = buscar.nomproy
-      ? concatenatedText + "<"
-      : concatenatedText;
-
-    // Reemplaza cualquier secuencia de '<<' por '<'
-    setTextoFinal(finalText.replace(/<<+/g, "<"));
-  }, [buscar]); */
-  /* useEffect(() => {
-    const concatenatedText = Object.entries(buscar)
-      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
-      .map(([key, value]) => {
-        if (key === "codigo") {
-          return `${key}>${value}<`;
-        } else {
-          return `<${key}>${value}`;
-        }
-      })
-      .join("");
-
-    const finalText = concatenatedText.replace(/<<+/g, "<");
-    setTextoFinal(finalText);
-  }, [buscar]); */
-
-  /* useEffect(() => {
-    const concatenatedText = Object.entries(buscar)
-      .filter(([, value]) => value.trim() !== "") // Filtra los valores no vacíos
-      .map(([key, value]) => `${key}${value}`)
-      .join("");
-
-    setTextoFinal(concatenatedText);
-  }, [buscar]); */
-
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    // const modifiedValue = name === "nomproy" ? `${value}<` : value;
-    setBuscar((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    const { value } = event.target;
+    setBuscar(value);
   };
 
   const handleSearch = async () => {
-    console.log("Realizando la solicitud GET con valores:", textoFinal);
+    console.log("Realizando la solicitud GET con valores:", buscar);
     try {
-      /*  if (Object.values(buscar).every((value) => value.trim() === "")) {
-        return;
-      }
-
-      const concatenatedText = Object.entries(buscar)
-        .filter(([, value]) => value.trim() !== "")
-        .map(([key, value]) => {
-          if (key === "codigo") {
-            return `<${key}>${value}<`;
-          } else {
-            return `<${key}>${value}`;
-          }
-        })
-        .join("")
-        .replace(/<<+/g, "<"); */
-
-      /* if (!hasInput) {
-        // No realiza la búsqueda si no se ha introducido al menos una letra
-        return;
-      }
-
-      if (Object.values(buscar).every((value) => value.trim() === "")) {
-        return;
-      }
- */
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/buscar/${textoFinal}`;
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/buscar/${buscar}`;
       const token = obtenerToken();
       const headers = {
         Authorization: `Bearer ${token}`,
@@ -133,7 +34,7 @@ const BuscarViviend = () => {
 
       if (response.status === 200) {
         setDatoscontratoData(response.data);
-        setIsDataLoaded(true); // Marca los datos como cargados
+        setIsDataLoaded(true);
       } else {
         console.error("Error fetching user data");
       }
@@ -141,9 +42,6 @@ const BuscarViviend = () => {
       console.error("Error:", error);
     }
   };
-
-  console.log("111 ", buscar);
-  console.log("222 ", textoFinal);
 
   useEffect(() => {
     const fetchData2 = async () => {
@@ -208,44 +106,37 @@ const BuscarViviend = () => {
       {
         accessorKey: "proy_cod",
         header: "CODIGO",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "cont_des",
         header: "PROYECTO",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "montocontrato",
         header: "MONTO CONTRATO Bs.",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "inst_des",
         header: "EMPRESA",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "bole_fechav",
         header: "ULTIMA BOLETA",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "etap_cod",
         header: "ESTADO SAP",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
         accessorKey: "depa_des",
         header: "DEPARTAMENTO",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
     ],
     []
@@ -254,10 +145,8 @@ const BuscarViviend = () => {
   const columns3 = useMemo(
     () => [
       {
-        enableColumnFilter: false,
         header: "SUBIR ARCHIVO",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
         Cell: ({ row }) => (
           <div
             style={{
@@ -272,10 +161,8 @@ const BuscarViviend = () => {
         ),
       },
       {
-        enableColumnFilter: false,
         header: "SUBIR ARCHIVO BANCO",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
         Cell: ({ row }) => (
           <div
             style={{
@@ -290,361 +177,259 @@ const BuscarViviend = () => {
         ),
       },
       {
-        enableColumnFilter: false,
         accessorKey: "iddesem",
         header: "ID",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "proyecto_id",
         header: "proyecto_id",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "monto_fisico",
         header: "monto_fisico",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "descuento_anti_reten",
         header: "descuento_anti_reten",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "multa",
         header: "multa",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "monto_desembolsado",
         header: "monto_desembolsado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "tipo_planilla",
         header: "tipo_planilla",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "checklist",
         header: "checklist",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "idcuenta",
         header: "idcuenta",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "estado",
         header: "estado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_insert",
         header: "fecha_insert",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_update",
         header: "fecha_update",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_user",
         header: "id_user",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_generado",
         header: "fecha_generado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "monto_contrato",
         header: "monto_contrato",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "mes",
         header: "mes",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "gestion",
         header: "gestion",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_pago",
         header: "id_pago",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_banco",
         header: "fecha_banco",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_user_vobo",
         header: "id_user_vobo",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_vobo",
         header: "fecha_vobo",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_abono",
         header: "fecha_abono",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "proy_cod",
         header: "proy_cod",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "cont_cod",
         header: "cont_cod",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "titr_cod",
         header: "titr_cod",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "ploc_cod",
         header: "ploc_cod",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "numero_inst",
         header: "numero_inst",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "numero_factura",
         header: "numero_factura",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "objeto",
         header: "objeto",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "procesocontratacion",
         header: "procesocontratacion",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "uh",
         header: "uh",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "observacion",
         header: "observacion",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "cite",
         header: "cite",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "archivo",
         header: "archivo",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "open",
         header: "open",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "justificacion_anulacion",
         header: "justificacion_anulacion",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fecha_anulado",
         header: "fecha_anulado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_user_anulacion",
         header: "id_user_anulacion",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "observaciones_pago",
         header: "observaciones_pago",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "archivoxls",
         header: "archivoxls",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "sigepro_id",
         header: "sigepro_id",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_dpto",
         header: "id_dpto",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id_planilla",
         header: "id_planilla",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "Observaciones_Sistemas",
         header: "Observaciones_Sistemas",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "activo",
         header: "activo",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "migrado_fecha_abono",
         header: "migrado_fecha_abono",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "id",
         header: "ID",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "etapa",
         header: "ETAPA",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fechagenerado",
         header: "fechagenerado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "fechabanco",
         header: "fechabanco",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
       {
-        enableColumnFilter: false,
         accessorKey: "monto_desembolsado",
         header: "monto_desembolsado",
-        filterVariant: "text", // default
-        size: 100,
+        size: 50,
       },
     ],
     []
@@ -656,44 +441,19 @@ const BuscarViviend = () => {
         <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">
           Buscar
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="col-span-1 flex justify-center">
-            <TextField
-              name="codigo"
-              helperText="Ejemplo: AEV-LP-0000"
-              id="standard-basic"
-              label="Codigo de Proyecto:"
-              variant="standard"
-              className="w-full"
-              value={buscar.codigo || ""}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <TextField
-              name="nomproy"
-              helperText="Ejemplo: CONSTRUCCION DE..."
-              id="standard-basic"
-              label="Nombre de Proyecto:"
-              variant="standard"
-              className="w-full"
-              value={buscar.nomproy || ""}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <TextField
-              name="depdes"
-              helperText="Ejemplo: La Paz"
-              id="standard-basic"
-              label="Departamento del Proyecto:"
-              variant="standard"
-              className="w-full"
-              value={buscar.depdes || ""}
-              onChange={handleInputChange}
-            />
-          </div>
+        <div className="col-span-1 flex justify-center md:px-16">
+          <TextField
+            name="codigo"
+            helperText="Ejemplo: AEV-LP-0000 o FASE(XIII)..."
+            id="standard-basic"
+            label="Codigo de Proyecto o Nombre de Proyecto:"
+            variant="standard"
+            className="w-full "
+            value={buscar}
+            onChange={handleInputChange}
+          />
         </div>
+
         <div className="flex justify-center pt-5">
           <Button variant="outlined" onClick={handleSearch}>
             <span className="mr-2">Buscar</span>{" "}
@@ -748,6 +508,13 @@ const BuscarViviend = () => {
             Detalle: {contcodData[0].proy_des}
           </p>
           <MaterialReactTable
+            showColumnFilters={false}
+            enableHiding={false}
+            enableGlobalFilter={false}
+            enableColumnActions={false}
+            enableColumnFilters={false}
+            enablePagination={false}
+            enableSorting={false}
             columns={columns3}
             data={contcodComplejaData}
             enableFacetedValues

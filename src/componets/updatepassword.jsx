@@ -1,16 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 import { obtenerToken } from "../utils/auth";
 import { obtenerUserId } from "../utils/userdata";
 
-import { useRouter } from "next/navigation";
-
 import validator from "validator";
 
 export default function UpdatePassword() {
-  const router = useRouter();
   const userId = obtenerUserId();
 
   const [error, setError] = useState(null);

@@ -4,8 +4,6 @@ import Footer from "../componets/footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

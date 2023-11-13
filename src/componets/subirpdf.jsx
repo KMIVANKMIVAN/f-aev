@@ -17,7 +17,7 @@ const SubirPdf = () => {
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
-    setError(null); // Limpiar cualquier error anterior al seleccionar un nuevo archivo.
+    setError(null);
   };
 
   const handleFileUpload = async () => {
@@ -116,11 +116,10 @@ const SubirPdf = () => {
             onClick={handleClose}
             style={{
               color: "red",
-              fontWeight: "bold", // Aumentamos el grosor del texto
-              // fontSize: "1rem",
-              transition: "color 0.3s", // Agregamos una transición suave
+              fontWeight: "bold",
+              transition: "color 0.3s",
             }}
-            onMouseOver={(e) => (e.target.style.color = "darkred")} // Cambiamos el color al pasar el mouse
+            onMouseOver={(e) => (e.target.style.color = "darkred")}
             onMouseOut={(e) => (e.target.style.color = "red")}
           >
             Cerrar
@@ -128,8 +127,7 @@ const SubirPdf = () => {
           <Button
             style={{
               color: "green",
-              fontWeight: "bold", // Aumentamos el grosor del texto
-              // fontSize: "1rem",
+              fontWeight: "bold",
               transition: "color 0.3s",
             }}
             onMouseOver={(e) => (e.target.style.color = "darkgreen")}
