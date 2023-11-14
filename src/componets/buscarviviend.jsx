@@ -8,15 +8,46 @@ import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import SubirPdf from "./subirpdf";
 
+import Stack from "@mui/material/Stack";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+
 const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
   const [buscar, setBuscar] = useState("");
   const [contcodData, setContcodData] = useState([]);
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [selectedContCod, setSelectedContCod] = useState(null);
-  const [nombreidpdf, setNombreidpdf] = useState(null);
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const downloadFile = async (fileName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/download/${fileName}`;
+      const token = obtenerToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await fetch(url, { headers });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } else {
+        console.error("Error downloading file");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const handleInputChange = (event) => {
     const { value } = event.target;
@@ -146,11 +177,75 @@ const BuscarViviend = () => {
     ],
     []
   );
-
+  // AEV-PTS-0173
   const columns3 = useMemo(
     () => [
       {
-        header: "SUBIR ARCHIVO",
+        header: "SUBIR PDF MAE",
+        size: 50,
+        Cell: ({ row }) => {
+          const [showSubirPdf, setShowSubirPdf] = useState(false);
+
+          return (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              {showSubirPdf ? (
+                <SubirPdf nombreidpdf={row.original.iddesem + "-aev"} />
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    color="error"
+                    size="small"
+                    endIcon={<UploadFileIcon size="small" />}
+                    onClick={() => setShowSubirPdf(true)}
+                  ></Button>
+                </Stack>
+              )}
+            </div>
+          );
+        },
+      },
+
+      {
+        header: "SUBIR PDF AEV",
+        size: 50,
+        Cell: ({ row }) => {
+          const [showSubirPdf, setShowSubirPdf] = useState(false);
+
+          return (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              {showSubirPdf ? (
+                <SubirPdf nombreidpdf={row.original.iddesem + "-aev"} />
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    color="error"
+                    size="small"
+                    endIcon={<UploadFileIcon size="small" />}
+                    onClick={() => setShowSubirPdf(true)}
+                  ></Button>
+                </Stack>
+              )}
+            </div>
+          );
+        },
+      },
+
+      {
+        header: "PDF MAE",
         size: 50,
         Cell: ({ row }) => (
           <div
@@ -161,12 +256,53 @@ const BuscarViviend = () => {
               height: "100%",
             }}
           >
-            <SubirPdf nombreidpdf={row.original.iddesem} />
+            <Stack direction="row" spacing={2}>
+              <Button
+                size="small"
+                // endIcon={<PictureAsPdfIcon size="small" />}
+                color="success"
+                endIcon={<SaveAltIcon size="small" />}
+                onClick={() => downloadFile(`${row.original.iddesem}-aev`)}
+              ></Button>
+            </Stack>
+            {/* <SubirPdf nombreidpdf={row.original.iddesem + "-mae"} /> */}
           </div>
         ),
       },
       {
-        header: "SUBIR ARCHIVO BANCO",
+        header: "SUBIR PDF BANCO",
+        size: 50,
+        Cell: ({ row }) => {
+          const [showSubirPdf, setShowSubirPdf] = useState(false);
+
+          return (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              {showSubirPdf ? (
+                <SubirPdf nombreidpdf={row.original.iddesem + "-busa"} />
+              ) : (
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    color="error"
+                    size="small"
+                    endIcon={<UploadFileIcon size="small" />}
+                    onClick={() => setShowSubirPdf(true)}
+                  ></Button>
+                </Stack>
+              )}
+            </div>
+          );
+        },
+      },
+
+      {
+        header: "PDF BAMCO",
         size: 50,
         Cell: ({ row }) => (
           <div
@@ -177,7 +313,16 @@ const BuscarViviend = () => {
               height: "100%",
             }}
           >
-            <SubirPdf nombreidpdf={row.original.iddesem} />
+            <Stack direction="row" spacing={2}>
+              <Button
+                size="small"
+                color="success"
+                // endIcon={<PictureAsPdfIcon size="small" />}
+                endIcon={<SaveAltIcon size="small" />}
+                onClick={() => downloadFile(`${row.original.iddesem}-busa`)}
+              ></Button>
+            </Stack>
+            {/* <SubirPdf nombreidpdf={row.original.iddesem + "-mae"} /> */}
           </div>
         ),
       },
@@ -442,6 +587,7 @@ const BuscarViviend = () => {
 
   return (
     <>
+      {/* <SubirPdf /> */}
       <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
         <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">
           Buscar

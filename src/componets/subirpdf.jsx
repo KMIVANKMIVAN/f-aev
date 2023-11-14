@@ -15,6 +15,8 @@ const SubirPdf = ({ nombreidpdf }) => {
   const [error, setError] = useState(null);
   const [sucess, setSucess] = useState(null);
 
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfBlob, setPdfBlob] = useState(null);
   console.log("aver si llego el nombreidpdf", nombreidpdf);
 
   const handleFileChange = (event) => {
@@ -23,6 +25,47 @@ const SubirPdf = ({ nombreidpdf }) => {
   };
 
   const handleFileUpload = async () => {
+    if (!selectedFile) {
+      setError("Debes seleccionar un archivo.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/upload/${nombreidpdf}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${obtenerToken()}`,
+            "Content-Type": "multipart/form-data",
+          },
+          responseType: "blob", // Indica que esperamos un blob como respuesta
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Archivo subido con éxito.");
+        setSucess("Archivo subido con éxito.");
+        const pdfBlob = response.data;
+        const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+        setPdfUrl(pdfBlobUrl); // Almacena la URL del PDF en el estado
+        setPdfBlob(pdfBlob); // Almacena el blob del PDF en el estado
+      } else {
+        setError("Error al subir el archivo: " + response.data.message);
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        setError("Error: " + error.response.data.message);
+      } else {
+        setError("Error: " + error.message);
+      }
+    }
+  };
+
+  /* const handleFileUpload = async () => {
     if (!selectedFile) {
       setError("Debes seleccionar un archivo.");
       return;
@@ -56,7 +99,7 @@ const SubirPdf = ({ nombreidpdf }) => {
         setError("Error: " + error.message);
       }
     }
-  };
+  }; */
 
   const [open, setOpen] = React.useState(false);
 
@@ -68,24 +111,26 @@ const SubirPdf = ({ nombreidpdf }) => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    handleClickOpen(); // Abre el Dialog cuando el componente se monta
+  }, []); // El segundo argumento es un array vacío para que se ejecute solo una vez al montarse el componente
+
+  const [showPdf, setShowPdf] = useState(false);
+  const handleDownloadPdf = async () => {
+    if (pdfBlob) {
+      setShowPdf(true); // Mostrar el PDF al recibir la respuesta
+    }
+  };
+
+  const handleOpenPdf = () => {
+    if (pdfBlob) {
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfBlobUrl, "_blank"); // Abrir el PDF en una nueva pestaña
+    }
+  };
+
   return (
     <>
-      <Button onClick={handleClickOpen}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          className="w-6 h-6 text-green-600"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 11.25l-3-3m0 0l-3 3m3-3v7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -93,7 +138,7 @@ const SubirPdf = ({ nombreidpdf }) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"ESTA SEGURO DE SUBIR EL ARCHIVO?"}
+          {"¿ESTÁ SEGURO DE SUBIR EL ARCHIVO?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -108,10 +153,18 @@ const SubirPdf = ({ nombreidpdf }) => {
               accept=".pdf"
               onChange={handleFileChange}
             />
-
+            {/* 
             {error && <p className="mt-2 text-red-500">{error}</p>}
-            {sucess && <p className="mt-2 text-green-500">{sucess}</p>}
+            {success && <p className="mt-2 text-green-500">{success}</p>} */}
           </DialogContentText>
+          {pdfUrl && ( // Mostrar el PDF si pdfUrl no es null
+            <embed
+              src={pdfUrl} // Mostrar la URL del PDF en un componente <embed>
+              type="application/pdf"
+              width="100%"
+              height="600px"
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -137,6 +190,30 @@ const SubirPdf = ({ nombreidpdf }) => {
             onClick={handleFileUpload}
           >
             Subir Archivo
+          </Button>
+          <Button
+            style={{
+              color: "blue",
+              fontWeight: "bold",
+              transition: "color 0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.color = "darkblue")}
+            onMouseOut={(e) => (e.target.style.color = "blue")}
+            onClick={handleFileUpload}
+          >
+            Descargar PDF
+          </Button>
+          <Button
+            style={{
+              color: "blue",
+              fontWeight: "bold",
+              transition: "color 0.3s",
+            }}
+            onMouseOver={(e) => (e.target.style.color = "darkblue")}
+            onMouseOut={(e) => (e.target.style.color = "blue")}
+            onClick={handleOpenPdf} // Llamar a la función para abrir el PDF en una nueva pestaña
+          >
+            Abrir PDF
           </Button>
         </DialogActions>
       </Dialog>
