@@ -7,11 +7,20 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 import SubirPdf from "./subirpdf";
+import BajarPdf from "./bajarpdf";
 
 import Stack from "@mui/material/Stack";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import TextSnippetRoundedIcon from "@mui/icons-material/TextSnippetRounded";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
@@ -21,6 +30,24 @@ const BuscarViviend = () => {
   const [selectedContCod, setSelectedContCod] = useState(null);
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const [showUploadButton, setShowUploadButton] = useState(true);
+  const [showDownloadButton, setShowDownloadButton] = useState(false);
+
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [showSubirPdf, setShowSubirPdf] = useState(false);
+
+  const handleUploadButtonClick = () => {
+    setShowUploadButton(false);
+    setShowDownloadButton(true);
+  };
+
+  const handleDownloadButtonClick = () => {
+    setShowUploadButton(true);
+    setShowDownloadButton(false);
+  };
+
+  const [serverError, setServerError] = useState("");
 
   const downloadFile = async (fileName) => {
     try {
@@ -41,11 +68,18 @@ const BuscarViviend = () => {
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
+        setShowDownloadButton(false);
+        setServerError(""); // Limpiar el mensaje de error si la descarga es exitosa
       } else {
-        console.error("Error downloading file");
+        const errorText = await response.text(); // Obtener el mensaje de error del cuerpo de la respuesta
+        setServerError(
+          errorText || "Error desconocido al descargar el archivo"
+        );
+        // console.error("Error downloading file");
       }
     } catch (error) {
-      console.error("Error:", error);
+      setServerError("Error durante la descarga del archivo");
+      // console.error("Error:", error);
     }
   };
 
@@ -137,6 +171,101 @@ const BuscarViviend = () => {
     fetchData3();
   }, [contcodData]);
 
+  const [serverErrorVerPdf, setServerErrorVerPdf] = useState("");
+
+  const handleViewPdfClick = async (partialName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/viewbypartialName/${partialName}`;
+      const token = obtenerToken();
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.get(url, {
+        headers,
+        responseType: "blob",
+      });
+
+      console.log("lo que responde:", response);
+
+      /* if (response.status === 200) {
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const pdfUrl = window.URL.createObjectURL(blob);
+
+        window.open(pdfUrl, "_blank");
+      } else {
+        const errorText = await response.text(); // Obtener el mensaje de error del cuerpo de la respuesta
+        console.log("que siempre llega", errorText);
+        if (errorText.includes("El archivo solicitado no se encontró")) {
+          setServerErrorVerPdf(errorText);
+        } else {
+          setServerErrorVerPdf(errorText || "Error al mostrar el archivo PDF");
+        }
+      } */
+      if (response.status === 200) {
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const pdfUrl = window.URL.createObjectURL(blob);
+
+        window.open(pdfUrl, "_blank"); // Limpiar el mensaje de error si la descarga es exitosa
+      } else {
+        const errorText = await response.text(); // Obtener el mensaje de error del cuerpo de la respuesta
+        setServerErrorVerPdf(
+          errorText || "Error desconocido al cargar el archivo"
+        );
+        // console.error("Error downloading file");
+      }
+    } catch (error) {
+      /* catch (error) {
+      if (error.response) {
+        // Si la respuesta tiene información del servidor
+        console.log("que siempre llega 2", error.response);
+
+        const serverErrorText =
+          error.response.data.message || "Error del servidor";
+        setServerErrorVerPdf(serverErrorText);
+      } else {
+        // Si es un error general (por ejemplo, timeout, red no disponible, etc.)
+        setServerErrorVerPdf("Error al mostrar el archivo PDF");
+      }
+    } */
+      setServerError(
+        "El archivo solicitado no se cargo ¿Estás seguro de que el archivo ha sido subido?"
+      );
+      // console.error("Error:", error);
+    }
+  };
+
+  const [errorDeletePdf, setErrorDeletePdf] = useState("");
+
+  const deletePdf = async (partialName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/delete/${partialName}`;
+
+      const token = obtenerToken();
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.delete(url, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        console.log("PDF eliminado correctamente");
+        setErrorDeletePdf("");
+      } else {
+        setErrorDeletePdf("Error al eliminar el PDF");
+      }
+    } catch (error) {
+      setErrorDeletePdf(
+        "El archivo solicitado no se elimino ¿Estás seguro de que el archivo ha sido subido?"
+      );
+      console.error("Error:", error);
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -181,43 +310,9 @@ const BuscarViviend = () => {
   const columns3 = useMemo(
     () => [
       {
-        header: "SUBIR PDF MAE",
-        size: 50,
-        Cell: ({ row }) => {
-          const [showSubirPdf, setShowSubirPdf] = useState(false);
-
-          return (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              {showSubirPdf ? (
-                <SubirPdf nombreidpdf={row.original.iddesem + "-aev"} />
-              ) : (
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    color="error"
-                    size="small"
-                    endIcon={<UploadFileIcon size="small" />}
-                    onClick={() => setShowSubirPdf(true)}
-                  ></Button>
-                </Stack>
-              )}
-            </div>
-          );
-        },
-      },
-
-      {
         header: "SUBIR PDF AEV",
         size: 50,
         Cell: ({ row }) => {
-          const [showSubirPdf, setShowSubirPdf] = useState(false);
-
           return (
             <div
               style={{
@@ -227,25 +322,38 @@ const BuscarViviend = () => {
                 height: "100%",
               }}
             >
-              {showSubirPdf ? (
+              <Button
+                color="error"
+                size="small"
+                endIcon={<UploadFileIcon size="small" />}
+                onClick={() => {
+                  setSelectedRow(row.index); // Almacena el índice de la fila seleccionada
+                  setShowSubirPdf(true); // Muestra el componente SubirPdf
+                }}
+              ></Button>
+
+              {showSubirPdf && selectedRow === row.index && (
                 <SubirPdf nombreidpdf={row.original.iddesem + "-aev"} />
-              ) : (
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    color="error"
-                    size="small"
-                    endIcon={<UploadFileIcon size="small" />}
-                    onClick={() => setShowSubirPdf(true)}
-                  ></Button>
-                </Stack>
               )}
+
+              <Button
+                size="small"
+                color="success"
+                endIcon={<SaveAltIcon size="small" />}
+                onClick={() => {
+                  downloadFile(`${row.original.iddesem}-aev`);
+                  handleDownloadButtonClick(); // Cambia el estado para mostrar el otro botón
+                }}
+                style={{ display: showDownloadButton ? "block" : "none" }}
+              ></Button>
+              {/* <p style={{ color: "red" }}>{serverError}</p> */}
             </div>
           );
         },
       },
 
       {
-        header: "PDF MAE",
+        header: "PDF AEV",
         size: 50,
         Cell: ({ row }) => (
           <div
@@ -266,6 +374,54 @@ const BuscarViviend = () => {
               ></Button>
             </Stack>
             {/* <SubirPdf nombreidpdf={row.original.iddesem + "-mae"} /> */}
+          </div>
+        ),
+      },
+      {
+        header: "VER PDF AEV",
+        size: 50,
+        Cell: ({ row }) => (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <Stack direction="row" spacing={2}>
+              <Button
+                size="small"
+                // color=""
+                endIcon={<TextSnippetRoundedIcon size="small" />}
+                onClick={() =>
+                  handleViewPdfClick(`${row.original.iddesem}-aev`)
+                } // Llama a la función con el nombre del PDF como argumento
+              ></Button>
+            </Stack>
+          </div>
+        ),
+      },
+      {
+        header: "ELIMINAR PDF AEV",
+        size: 50,
+        Cell: ({ row }) => (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <Stack direction="row" spacing={2}>
+              <Button
+                size="small"
+                color="error"
+                endIcon={<DeleteRoundedIcon size="small" />}
+                onClick={() => deletePdf(`${row.original.iddesem}-aev`)}
+              ></Button>
+            </Stack>
           </div>
         ),
       },
@@ -582,8 +738,21 @@ const BuscarViviend = () => {
         size: 50,
       },
     ],
-    []
+    [showSubirPdf, selectedRow]
   );
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  useEffect(() => {
+    handleClickOpen(); // Abre el Dialog cuando el componente se monta
+  }, []);
 
   return (
     <>
@@ -654,6 +823,7 @@ const BuscarViviend = () => {
         </div>
       )}
       <br />
+
       {contcodComplejaData.length > 0 && (
         <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
           <p className="text-c1p text-2xl font-bold">
@@ -678,6 +848,93 @@ const BuscarViviend = () => {
           />
         </div>
       )}
+      {serverError && (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <p style={{ color: "red" }}>{serverError}</p>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                transition: "color 0.3s",
+              }}
+              onMouseOver={(e) => (e.target.style.color = "darkred")}
+              onMouseOut={(e) => (e.target.style.color = "red")}
+            >
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {serverErrorVerPdf && (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <p style={{ color: "red" }}>{serverErrorVerPdf}</p>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                transition: "color 0.3s",
+              }}
+              onMouseOver={(e) => (e.target.style.color = "darkred")}
+              onMouseOut={(e) => (e.target.style.color = "red")}
+            >
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {errorDeletePdf && (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <p style={{ color: "red" }}>{errorDeletePdf}</p>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                transition: "color 0.3s",
+              }}
+              onMouseOver={(e) => (e.target.style.color = "darkred")}
+              onMouseOut={(e) => (e.target.style.color = "red")}
+            >
+              Cerrar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {/* {serverError && <p style={{ color: "red" }}>{serverError}</p>} */}
+      {/* {serverErrorVerPdf && <p style={{ color: "red" }}>{serverErrorVerPdf}</p>} */}
+      {/* {errorDeletePdf && <p style={{ color: "red" }}>{errorDeletePdf}</p>} */}
     </>
   );
 };

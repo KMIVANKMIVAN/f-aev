@@ -42,17 +42,17 @@ const SubirPdf = ({ nombreidpdf }) => {
             Authorization: `Bearer ${obtenerToken()}`,
             "Content-Type": "multipart/form-data",
           },
-          responseType: "blob", // Indica que esperamos un blob como respuesta
+          responseType: "blob",
         }
       );
 
       if (response.status === 200) {
         console.log("Archivo subido con éxito.");
-        setSucess("Archivo subido con éxito.");
+        setSuccess("Archivo subido con éxito.");
         const pdfBlob = response.data;
         const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-        setPdfUrl(pdfBlobUrl); // Almacena la URL del PDF en el estado
-        setPdfBlob(pdfBlob); // Almacena el blob del PDF en el estado
+        setPdfUrl(pdfBlobUrl);
+        setPdfBlob(pdfBlob);
       } else {
         setError("Error al subir el archivo: " + response.data.message);
       }
@@ -64,42 +64,6 @@ const SubirPdf = ({ nombreidpdf }) => {
       }
     }
   };
-
-  /* const handleFileUpload = async () => {
-    if (!selectedFile) {
-      setError("Debes seleccionar un archivo.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/upload/${nombreidpdf}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${obtenerToken()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        console.log("Archivo subido con éxito.");
-        setSucess("Archivo subido con éxito.");
-      } else {
-        setError("Error al subir el archivo: " + response.data.message);
-      }
-    } catch (error) {
-      if (error.response && error.response.data) {
-        setError("Error: " + error.response.data.message);
-      } else {
-        setError("Error: " + error.message);
-      }
-    }
-  }; */
 
   const [open, setOpen] = React.useState(false);
 
@@ -125,7 +89,34 @@ const SubirPdf = ({ nombreidpdf }) => {
   const handleOpenPdf = () => {
     if (pdfBlob) {
       const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfBlobUrl, "_blank"); // Abrir el PDF en una nueva pestaña
+      window.open(pdfBlobUrl, "_blank");
+    }
+  };
+
+  const downloadFile = async (fileName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/download/${fileName}`;
+      const token = obtenerToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await fetch(url, { headers });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } else {
+        console.error("Error downloading file");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -190,30 +181,6 @@ const SubirPdf = ({ nombreidpdf }) => {
             onClick={handleFileUpload}
           >
             Subir Archivo
-          </Button>
-          <Button
-            style={{
-              color: "blue",
-              fontWeight: "bold",
-              transition: "color 0.3s",
-            }}
-            onMouseOver={(e) => (e.target.style.color = "darkblue")}
-            onMouseOut={(e) => (e.target.style.color = "blue")}
-            onClick={handleFileUpload}
-          >
-            Descargar PDF
-          </Button>
-          <Button
-            style={{
-              color: "blue",
-              fontWeight: "bold",
-              transition: "color 0.3s",
-            }}
-            onMouseOver={(e) => (e.target.style.color = "darkblue")}
-            onMouseOut={(e) => (e.target.style.color = "blue")}
-            onClick={handleOpenPdf} // Llamar a la función para abrir el PDF en una nueva pestaña
-          >
-            Abrir PDF
           </Button>
         </DialogActions>
       </Dialog>
