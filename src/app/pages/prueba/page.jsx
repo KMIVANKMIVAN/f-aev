@@ -1,14 +1,10 @@
 "use client";
 import React, { useState } from "react";
-// import { useStore } from "../../../zustand/store";
 import { useUsersStore } from "../../../store/users";
 
 import Pruebas from "../pruebas/page";
 
 const Prueba = () => {
-  // const { datoscontratoData } = useStore();
-  // console.log("datoscontratoData", datoscontratoData);
-
   const { addUser } = useUsersStore(); // Aquí puede estar el error
   const [name, setName] = useState("");
   console.log("name", name);

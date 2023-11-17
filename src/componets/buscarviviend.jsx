@@ -3,6 +3,9 @@ import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+
+import Tooltip from "@mui/material/Tooltip";
 
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
@@ -16,11 +19,36 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import TextSnippetRoundedIcon from "@mui/icons-material/TextSnippetRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { styled } from "@mui/material/styles";
+import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
+import CardHeader from "@mui/material/CardHeader";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import { red } from "@mui/material/colors";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShareIcon from "@mui/icons-material/Share";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 const BuscarViviend = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
@@ -36,6 +64,26 @@ const BuscarViviend = () => {
 
   const [selectedRow, setSelectedRow] = useState(null);
   const [showSubirPdf, setShowSubirPdf] = useState(false);
+
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
+  console.log("datoscontratoData:");
+  console.log(datoscontratoData);
+  console.log("contcodComplejaData:");
+  console.log(contcodComplejaData);
+
+  const [expandedItems, setExpandedItems] = useState({});
+
+  // Function to toggle the expanded state of a particular card
+  const handleExpandClick = (index) => {
+    setExpandedItems({
+      ...expandedItems,
+      [index]: !expandedItems[index],
+    });
+  };
 
   const handleUploadButtonClick = () => {
     setShowUploadButton(false);
@@ -75,17 +123,16 @@ const BuscarViviend = () => {
         setServerError(
           errorText || "Error desconocido al descargar el archivo"
         );
-        // console.error("Error downloading file");
       }
     } catch (error) {
       setServerError("Error durante la descarga del archivo");
-      // console.error("Error:", error);
     }
   };
 
   const handleInputChange = (event) => {
     const { value } = event.target;
     setBuscar(value);
+    setButtonDisabled(value.length <= 11); // Deshabilitar el botón si la longitud es menor o igual a 11 caracteres
   };
 
   const handleSearch = async () => {
@@ -171,71 +218,6 @@ const BuscarViviend = () => {
     fetchData3();
   }, [contcodData]);
 
-  const [serverErrorVerPdf, setServerErrorVerPdf] = useState("");
-
-  const handleViewPdfClick = async (partialName) => {
-    try {
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/viewbypartialName/${partialName}`;
-      const token = obtenerToken();
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-
-      const response = await axios.get(url, {
-        headers,
-        responseType: "blob",
-      });
-
-      console.log("lo que responde:", response);
-
-      /* if (response.status === 200) {
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const pdfUrl = window.URL.createObjectURL(blob);
-
-        window.open(pdfUrl, "_blank");
-      } else {
-        const errorText = await response.text(); // Obtener el mensaje de error del cuerpo de la respuesta
-        console.log("que siempre llega", errorText);
-        if (errorText.includes("El archivo solicitado no se encontró")) {
-          setServerErrorVerPdf(errorText);
-        } else {
-          setServerErrorVerPdf(errorText || "Error al mostrar el archivo PDF");
-        }
-      } */
-      if (response.status === 200) {
-        const blob = new Blob([response.data], { type: "application/pdf" });
-        const pdfUrl = window.URL.createObjectURL(blob);
-
-        window.open(pdfUrl, "_blank"); // Limpiar el mensaje de error si la descarga es exitosa
-      } else {
-        const errorText = await response.text(); // Obtener el mensaje de error del cuerpo de la respuesta
-        setServerErrorVerPdf(
-          errorText || "Error desconocido al cargar el archivo"
-        );
-        // console.error("Error downloading file");
-      }
-    } catch (error) {
-      /* catch (error) {
-      if (error.response) {
-        // Si la respuesta tiene información del servidor
-        console.log("que siempre llega 2", error.response);
-
-        const serverErrorText =
-          error.response.data.message || "Error del servidor";
-        setServerErrorVerPdf(serverErrorText);
-      } else {
-        // Si es un error general (por ejemplo, timeout, red no disponible, etc.)
-        setServerErrorVerPdf("Error al mostrar el archivo PDF");
-      }
-    } */
-      setServerError(
-        "El archivo solicitado no se cargo ¿Estás seguro de que el archivo ha sido subido?"
-      );
-      // console.error("Error:", error);
-    }
-  };
-
   const [errorDeletePdf, setErrorDeletePdf] = useState("");
 
   const deletePdf = async (partialName) => {
@@ -266,566 +248,114 @@ const BuscarViviend = () => {
     }
   };
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "proy_cod",
-        header: "CODIGO",
-        size: 50,
-      },
-      {
-        accessorKey: "cont_des",
-        header: "PROYECTO",
-        size: 50,
-      },
-      {
-        accessorKey: "montocontrato",
-        header: "MONTO CONTRATO Bs.",
-        size: 50,
-      },
-      {
-        accessorKey: "inst_des",
-        header: "EMPRESA",
-        size: 50,
-      },
-      {
-        accessorKey: "bole_fechav",
-        header: "ULTIMA BOLETA",
-        size: 50,
-      },
-      {
-        accessorKey: "etap_cod",
-        header: "ESTADO SAP",
-        size: 50,
-      },
-      {
-        accessorKey: "depa_des",
-        header: "DEPARTAMENTO",
-        size: 50,
-      },
-    ],
-    []
-  );
-  // AEV-PTS-0173
-  const columns3 = useMemo(
-    () => [
-      {
-        header: "SUBIR PDF AEV",
-        size: 50,
-        Cell: ({ row }) => {
-          return (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              <Button
-                color="error"
-                size="small"
-                endIcon={<UploadFileIcon size="small" />}
-                onClick={() => {
-                  setSelectedRow(row.index); // Almacena el índice de la fila seleccionada
-                  setShowSubirPdf(true); // Muestra el componente SubirPdf
-                }}
-              ></Button>
-
-              {showSubirPdf && selectedRow === row.index && (
-                <SubirPdf nombreidpdf={row.original.iddesem + "-aev"} />
-              )}
-
-              <Button
-                size="small"
-                color="success"
-                endIcon={<SaveAltIcon size="small" />}
-                onClick={() => {
-                  downloadFile(`${row.original.iddesem}-aev`);
-                  handleDownloadButtonClick(); // Cambia el estado para mostrar el otro botón
-                }}
-                style={{ display: showDownloadButton ? "block" : "none" }}
-              ></Button>
-              {/* <p style={{ color: "red" }}>{serverError}</p> */}
-            </div>
-          );
-        },
-      },
-
-      {
-        header: "PDF AEV",
-        size: 50,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Stack direction="row" spacing={2}>
-              <Button
-                size="small"
-                // endIcon={<PictureAsPdfIcon size="small" />}
-                color="success"
-                endIcon={<SaveAltIcon size="small" />}
-                onClick={() => downloadFile(`${row.original.iddesem}-aev`)}
-              ></Button>
-            </Stack>
-            {/* <SubirPdf nombreidpdf={row.original.iddesem + "-mae"} /> */}
-          </div>
-        ),
-      },
-      {
-        header: "VER PDF AEV",
-        size: 50,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Stack direction="row" spacing={2}>
-              <Button
-                size="small"
-                // color=""
-                endIcon={<TextSnippetRoundedIcon size="small" />}
-                onClick={() =>
-                  handleViewPdfClick(`${row.original.iddesem}-aev`)
-                } // Llama a la función con el nombre del PDF como argumento
-              ></Button>
-            </Stack>
-          </div>
-        ),
-      },
-      {
-        header: "ELIMINAR PDF AEV",
-        size: 50,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Stack direction="row" spacing={2}>
-              <Button
-                size="small"
-                color="error"
-                endIcon={<DeleteRoundedIcon size="small" />}
-                onClick={() => deletePdf(`${row.original.iddesem}-aev`)}
-              ></Button>
-            </Stack>
-          </div>
-        ),
-      },
-      {
-        header: "SUBIR PDF BANCO",
-        size: 50,
-        Cell: ({ row }) => {
-          const [showSubirPdf, setShowSubirPdf] = useState(false);
-
-          return (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              {showSubirPdf ? (
-                <SubirPdf nombreidpdf={row.original.iddesem + "-busa"} />
-              ) : (
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    color="error"
-                    size="small"
-                    endIcon={<UploadFileIcon size="small" />}
-                    onClick={() => setShowSubirPdf(true)}
-                  ></Button>
-                </Stack>
-              )}
-            </div>
-          );
-        },
-      },
-
-      {
-        header: "PDF BAMCO",
-        size: 50,
-        Cell: ({ row }) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Stack direction="row" spacing={2}>
-              <Button
-                size="small"
-                color="success"
-                // endIcon={<PictureAsPdfIcon size="small" />}
-                endIcon={<SaveAltIcon size="small" />}
-                onClick={() => downloadFile(`${row.original.iddesem}-busa`)}
-              ></Button>
-            </Stack>
-            {/* <SubirPdf nombreidpdf={row.original.iddesem + "-mae"} /> */}
-          </div>
-        ),
-      },
-      {
-        accessorKey: "iddesem",
-        header: "ID",
-        size: 50,
-      },
-      {
-        accessorKey: "proyecto_id",
-        header: "proyecto_id",
-        size: 50,
-      },
-      {
-        accessorKey: "monto_fisico",
-        header: "monto_fisico",
-        size: 50,
-      },
-      {
-        accessorKey: "descuento_anti_reten",
-        header: "descuento_anti_reten",
-        size: 50,
-      },
-      {
-        accessorKey: "multa",
-        header: "multa",
-        size: 50,
-      },
-      {
-        accessorKey: "monto_desembolsado",
-        header: "monto_desembolsado",
-        size: 50,
-      },
-      {
-        accessorKey: "tipo_planilla",
-        header: "tipo_planilla",
-        size: 50,
-      },
-      {
-        accessorKey: "checklist",
-        header: "checklist",
-        size: 50,
-      },
-      {
-        accessorKey: "idcuenta",
-        header: "idcuenta",
-        size: 50,
-      },
-      {
-        accessorKey: "estado",
-        header: "estado",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_insert",
-        header: "fecha_insert",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_update",
-        header: "fecha_update",
-        size: 50,
-      },
-      {
-        accessorKey: "id_user",
-        header: "id_user",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_generado",
-        header: "fecha_generado",
-        size: 50,
-      },
-      {
-        accessorKey: "monto_contrato",
-        header: "monto_contrato",
-        size: 50,
-      },
-      {
-        accessorKey: "mes",
-        header: "mes",
-        size: 50,
-      },
-      {
-        accessorKey: "gestion",
-        header: "gestion",
-        size: 50,
-      },
-      {
-        accessorKey: "id_pago",
-        header: "id_pago",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_banco",
-        header: "fecha_banco",
-        size: 50,
-      },
-      {
-        accessorKey: "id_user_vobo",
-        header: "id_user_vobo",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_vobo",
-        header: "fecha_vobo",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_abono",
-        header: "fecha_abono",
-        size: 50,
-      },
-      {
-        accessorKey: "proy_cod",
-        header: "proy_cod",
-        size: 50,
-      },
-      {
-        accessorKey: "cont_cod",
-        header: "cont_cod",
-        size: 50,
-      },
-      {
-        accessorKey: "titr_cod",
-        header: "titr_cod",
-        size: 50,
-      },
-      {
-        accessorKey: "ploc_cod",
-        header: "ploc_cod",
-        size: 50,
-      },
-      {
-        accessorKey: "numero_inst",
-        header: "numero_inst",
-        size: 50,
-      },
-      {
-        accessorKey: "numero_factura",
-        header: "numero_factura",
-        size: 50,
-      },
-      {
-        accessorKey: "objeto",
-        header: "objeto",
-        size: 50,
-      },
-      {
-        accessorKey: "procesocontratacion",
-        header: "procesocontratacion",
-        size: 50,
-      },
-      {
-        accessorKey: "uh",
-        header: "uh",
-        size: 50,
-      },
-      {
-        accessorKey: "observacion",
-        header: "observacion",
-        size: 50,
-      },
-      {
-        accessorKey: "cite",
-        header: "cite",
-        size: 50,
-      },
-      {
-        accessorKey: "archivo",
-        header: "archivo",
-        size: 50,
-      },
-      {
-        accessorKey: "open",
-        header: "open",
-        size: 50,
-      },
-      {
-        accessorKey: "justificacion_anulacion",
-        header: "justificacion_anulacion",
-        size: 50,
-      },
-      {
-        accessorKey: "fecha_anulado",
-        header: "fecha_anulado",
-        size: 50,
-      },
-      {
-        accessorKey: "id_user_anulacion",
-        header: "id_user_anulacion",
-        size: 50,
-      },
-      {
-        accessorKey: "observaciones_pago",
-        header: "observaciones_pago",
-        size: 50,
-      },
-      {
-        accessorKey: "archivoxls",
-        header: "archivoxls",
-        size: 50,
-      },
-      {
-        accessorKey: "sigepro_id",
-        header: "sigepro_id",
-        size: 50,
-      },
-      {
-        accessorKey: "id_dpto",
-        header: "id_dpto",
-        size: 50,
-      },
-      {
-        accessorKey: "id_planilla",
-        header: "id_planilla",
-        size: 50,
-      },
-      {
-        accessorKey: "Observaciones_Sistemas",
-        header: "Observaciones_Sistemas",
-        size: 50,
-      },
-      {
-        accessorKey: "activo",
-        header: "activo",
-        size: 50,
-      },
-      {
-        accessorKey: "migrado_fecha_abono",
-        header: "migrado_fecha_abono",
-        size: 50,
-      },
-      {
-        accessorKey: "id",
-        header: "ID",
-        size: 50,
-      },
-      {
-        accessorKey: "etapa",
-        header: "ETAPA",
-        size: 50,
-      },
-      {
-        accessorKey: "fechagenerado",
-        header: "fechagenerado",
-        size: 50,
-      },
-      {
-        accessorKey: "fechabanco",
-        header: "fechabanco",
-        size: 50,
-      },
-      {
-        accessorKey: "monto_desembolsado",
-        header: "monto_desembolsado",
-        size: 50,
-      },
-    ],
-    [showSubirPdf, selectedRow]
-  );
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-  useEffect(() => {
-    handleClickOpen(); // Abre el Dialog cuando el componente se monta
-  }, []);
-
   return (
     <>
-      {/* <SubirPdf /> */}
-      <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
-        <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">
-          Buscar
-        </h2>
-        <div className="col-span-1 flex justify-center md:px-16">
-          <TextField
-            name="codigo"
-            helperText="Ejemplo: AEV-LP-0000 o FASE(XIII)..."
-            id="standard-basic"
-            label="Codigo de Proyecto o Nombre de Proyecto:"
-            variant="standard"
-            className="w-full "
-            value={buscar}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="flex justify-center pt-5">
-          <Button variant="outlined" onClick={handleSearch}>
-            <span className="mr-2">Buscar</span>{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
-          </Button>
-        </div>
+      <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">Buscar</h2>
+      <div className="col-span-1 flex justify-center px-10">
+        <TextField
+          name="codigo"
+          helperText="Ejemplo: AEV-LP-0000 o FASE(XIII)..."
+          id="standard-basic"
+          label="Codigo de Proyecto (COMPLETO) o Nombre de Proyecto:"
+          variant="standard"
+          className={`w-full ${
+            buscar.length < 12 ? "text-red-500" : "text-green-500"
+          }`}
+          value={buscar}
+          onChange={handleInputChange}
+        />
       </div>
-      {isDataLoaded && (
-        <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
-          <p className="text-mi-color-primario text-2xl font-bold">
-            Generacion Instruccion de Desembolso Vivienda Nueva
-          </p>
-          <MaterialReactTable
-            // showColumnFilters={false}
-            enableHiding={false}
-            enableGlobalFilter={false}
-            enableColumnActions={false}
-            enableColumnFilters={false}
-            enablePagination={false}
-            enableSorting={false}
-            columns={columns}
-            data={datoscontratoData}
-            initialState={{ density: "compact", showColumnFilters: true }}
-            enableFacetedValues
-            muiTableBodyRowProps={({ row }) => ({
-              onClick: (event) => {
-                setSelectedContCod(row.original.cont_cod);
-              },
-              sx: {
-                cursor: "pointer",
-              },
-            })}
-          />
-        </div>
-      )}
-      <br />
 
+      <div className="flex justify-center pt-5">
+        <Button
+          variant="outlined"
+          onClick={handleSearch}
+          disabled={buttonDisabled}
+        >
+          <span className="mr-2">Buscar</span>{" "}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+        </Button>
+      </div>
+      <br />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
+        {datoscontratoData.map((data, index) => (
+          <div key={index}>
+            <Card
+              elevation={24}
+              sx={{
+                minWidth: 275,
+                position: "relative",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  backgroundImage: 'url("/casa2.jpg")',
+                  backgroundSize: "100%",
+                  backgroundPosition: "center",
+                  opacity: 0.2,
+                },
+              }}
+            >
+              <CardContent>
+                <Typography
+                  sx={{ fontSize: 14 }}
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  Generacion Instruccion de Desembolso Vivienda Nueva
+                </Typography>
+                <Typography variant="h5" component="div">
+                  CODIGO: {data.proy_cod}
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                  PROYECTO: {data.cont_des}
+                </Typography>
+                <Typography variant="body2">
+                  MONTO CONTRATO Bs. {data.montocontrato}
+                  <br />
+                  EMPRESA: {data.inst_des}
+                  <br />
+                  ULTIMA BOLETA: {data.bole_fechav}
+                  <br />
+                  ESTADO SAP: {data.etap_cod}
+                  <br />
+                  DEPARTAMENTO: {data.depa_des}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  onClick={(event) => {
+                    setSelectedContCod(data.cont_cod);
+                  }}
+                  size="small"
+                >
+                  Seleccionar
+                </Button>
+              </CardActions>
+            </Card>
+            <br />
+          </div>
+        ))}
+      </div>
+      <br />
       {contcodComplejaData.length > 0 && (
-        <div className="flex min-h-full flex-col justify-center px-5 py-1 lg:px-4">
+        <>
           <p className="text-c1p text-2xl font-bold">
             PROYECTO: {contcodComplejaData[0]?.objeto || ""}
           </p>
@@ -833,108 +363,418 @@ const BuscarViviend = () => {
           <p className="text-c1p text-2xl font-bold">
             CODIGO: {contcodComplejaData[0]?.proy_cod || ""}
           </p>
-          <MaterialReactTable
-            showColumnFilters={false}
-            enableHiding={false}
-            enableGlobalFilter={false}
-            enableColumnActions={false}
-            enableColumnFilters={false}
-            // enablePagination={false}
-            enableSorting={false}
-            columns={columns3}
-            data={contcodComplejaData}
-            enableFacetedValues
-            initialState={{ density: "compact", showColumnFilters: true }}
-          />
-        </div>
+        </>
       )}
-      {/* {serverError && (
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              <p style={{ color: "red" }}>{serverError}</p>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleClose}
-              style={{
-                color: "red",
-                fontWeight: "bold",
-                transition: "color 0.3s",
+      <br />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
+        {contcodComplejaData.map((data, index) => (
+          <div key={index}>
+            <Card
+              elevation={24}
+              sx={{
+                minWidth: 280,
+                position: "relative",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  backgroundImage: 'url("/casa3.jpg")',
+                  backgroundSize: "100%",
+                  backgroundPosition: "center",
+                  opacity: 0.2,
+                },
               }}
-              onMouseOver={(e) => (e.target.style.color = "darkred")}
-              onMouseOut={(e) => (e.target.style.color = "red")}
             >
-              Cerrar
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      {serverErrorVerPdf && (
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              <p style={{ color: "red" }}>{serverErrorVerPdf}</p>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleClose}
-              style={{
-                color: "red",
-                fontWeight: "bold",
-                transition: "color 0.3s",
-              }}
-              onMouseOver={(e) => (e.target.style.color = "darkred")}
-              onMouseOut={(e) => (e.target.style.color = "red")}
-            >
-              Cerrar
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      {errorDeletePdf && (
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              <p style={{ color: "red" }}>{errorDeletePdf}</p>
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleClose}
-              style={{
-                color: "red",
-                fontWeight: "bold",
-                transition: "color 0.3s",
-              }}
-              onMouseOver={(e) => (e.target.style.color = "darkred")}
-              onMouseOut={(e) => (e.target.style.color = "red")}
-            >
-              Cerrar
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )} */}
-      {serverError && <p style={{ color: "red" }}>{serverError}</p>}
-      {serverErrorVerPdf && <p style={{ color: "red" }}>{serverErrorVerPdf}</p>}
-      {errorDeletePdf && <p style={{ color: "red" }}>{errorDeletePdf}</p>}
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    "& > *": {
+                      m: 1,
+                    },
+                  }}
+                >
+                  {/* <ButtonGroup
+                    variant="outlined"
+                    aria-label="outlined button group"
+                  >
+                    <Button
+                      color="error"
+                      size="small"
+                      endIcon={<UploadFileIcon size="small" />}
+                      onClick={() => {
+                        setSelectedRow(data.iddesem);
+                      }}
+                    ></Button>
+                    <Tooltip title="DESCARGAR" placement="top">
+                      <Button
+                        size="small"
+                        // endIcon={<PictureAsPdfIcon size="small" />}
+                        color="success"
+                        endIcon={<SaveAltIcon size="small" />}
+                        onClick={() =>
+                          downloadFile(`${row.original.iddesem}-aev`)
+                        }
+                      ></Button>
+                    </Tooltip>
+                    <Button
+                      size="small"
+                      color="error"
+                      endIcon={<DeleteRoundedIcon size="small" />}
+                      onClick={() => deletePdf(`${row.original.iddesem}-aev`)}
+                    ></Button>
+                  </ButtonGroup> */}
+                  <ButtonGroup variant="text" aria-label="text button group">
+                    <Tooltip title="subir pdf" placement="left-end">
+                      <Button
+                        color="error"
+                        size="small"
+                        endIcon={<UploadFileIcon size="large" />}
+                        onClick={() => {
+                          setSelectedCardIndex(index);
+                          setShowUploadDialog(true); // Abre el diálogo al hacer clic en el botón
+                        }}
+                      ></Button>
+                      {selectedCardIndex === index && ( // Renderiza SubirPdf solo si el índice coincide
+                        <SubirPdf nombreidpdf={data.iddesem + "-aev"} />
+                      )}
+                    </Tooltip>
+                    <Tooltip title="descargar pdf" placement="top">
+                      <Button
+                        size="small"
+                        color="success"
+                        endIcon={<SaveAltIcon size="large" />}
+                        onClick={() => downloadFile(`${data.iddesem}-aev`)}
+                      ></Button>
+                    </Tooltip>
+                    <Tooltip title="eliminar pdf" placement="right-start">
+                      <Button
+                        size="small"
+                        color="error"
+                        endIcon={<DeleteRoundedIcon size="large" />}
+                        onClick={() => deletePdf(`${data.iddesem}-aev`)}
+                      ></Button>
+                    </Tooltip>
+                  </ButtonGroup>
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  <div className="grid grid-cols-1 md:grid-cols-2">
+                    <div>
+                      {data.iddesem && (
+                        <>
+                          iddesem: {data.iddesem}
+                          <br />
+                        </>
+                      )}
+                      monto_fisico: {data.monto_fisico}
+                      <br />
+                      {data.monto_desembolsado && (
+                        <>
+                          monto_desembolsado: {data.monto_desembolsado}
+                          <br />
+                        </>
+                      )}
+                    </div>
+                    <div>
+                      {data.proyecto_id && (
+                        <>
+                          proyecto_id: {data.proyecto_id}
+                          <br />
+                        </>
+                      )}
+                      multa: {data.multa}
+                      <br />
+                      {data.tipo_planilla && (
+                        <>
+                          tipo_planilla: {data.tipo_planilla}
+                          <br />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </Typography>
+              </CardContent>
+              <CardActions disableSpacing sx={{ display: "flex" }}>
+                <ExpandMore
+                  expand={expandedItems[index] || false}
+                  onClick={() => handleExpandClick(index)}
+                  aria-expanded={expandedItems[index] || false}
+                >
+                  <ExpandMoreIcon />
+                </ExpandMore>
+              </CardActions>
+              <Collapse
+                in={expandedItems[index] || false}
+                timeout="auto"
+                unmountOnExit
+              >
+                <CardContent>
+                  <Typography variant="body2" color="text.secondary">
+                    <div className="grid grid-cols-1 md:grid-cols-2">
+                      <div>
+                        {data.checklist && (
+                          <>
+                            checklist: {data.checklist}
+                            <br />
+                          </>
+                        )}
+                        {data.estado && (
+                          <>
+                            estado: {data.estado}
+                            <br />
+                          </>
+                        )}
+                        {data.migrado_fecha_abono && (
+                          <>
+                            migrado_fecha_abono: {data.migrado_fecha_abono}
+                            <br />
+                          </>
+                        )}
+                        {data.etapa && (
+                          <>
+                            etapa: {data.etapa}
+                            <br />
+                          </>
+                        )}
+                        {data.fechabanco && (
+                          <>
+                            fechabanco: {data.fechabanco}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_update && (
+                          <>
+                            fecha_update: {data.fecha_update}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_generado && (
+                          <>
+                            fecha_generado: {data.fecha_generado}
+                            <br />
+                          </>
+                        )}
+                        {data.mes && (
+                          <>
+                            mes: {data.mes}
+                            <br />
+                          </>
+                        )}
+                        {data.id_pago && (
+                          <>
+                            id_pago: {data.id_pago}
+                            <br />
+                          </>
+                        )}
+                        {data.id_user_vobo && (
+                          <>
+                            id_user_vobo: {data.id_user_vobo}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_abono && (
+                          <>
+                            fecha_abono: {data.fecha_abono}
+                            <br />
+                          </>
+                        )}
+                        {data.cont_cod && (
+                          <>
+                            cont_cod: {data.cont_cod}
+                            <br />
+                          </>
+                        )}
+                        {data.ploc_cod && (
+                          <>
+                            ploc_cod: {data.ploc_cod}
+                            <br />
+                          </>
+                        )}
+                        {data.numero_factura && (
+                          <>
+                            numero_factura: {data.numero_factura}
+                            <br />
+                          </>
+                        )}
+                        {data.uh && (
+                          <>
+                            uh: {data.uh}
+                            <br />
+                          </>
+                        )}
+                        {data.cite && (
+                          <>
+                            cite: {data.cite}
+                            <br />
+                          </>
+                        )}
+                        open: {data.open}
+                        <br />
+                        {data.fecha_anulado && (
+                          <>
+                            fecha_anulado: {data.fecha_anulado}
+                            <br />
+                          </>
+                        )}
+                        {data.observaciones_pago && (
+                          <>
+                            observaciones_pago: {data.observaciones_pago}
+                            <br />
+                          </>
+                        )}
+                        {data.id_dpto && (
+                          <>
+                            id_dpto: {data.id_dpto}
+                            <br />
+                          </>
+                        )}
+                        {data.Observaciones_Sistemas && (
+                          <>
+                            Observaciones_Sistemas:{" "}
+                            {data.Observaciones_Sistemas}
+                            <br />
+                          </>
+                        )}
+                      </div>
+                      <div>
+                        {data.idcuenta && (
+                          <>
+                            idcuenta: {data.idcuenta}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_insert && (
+                          <>
+                            fecha_insert: {data.fecha_insert}
+                            <br />
+                          </>
+                        )}
+                        {data.id && (
+                          <>
+                            id: {data.id}
+                            <br />
+                          </>
+                        )}
+                        {data.fechagenerado && (
+                          <>
+                            fechagenerado: {data.fechagenerado}
+                            <br />
+                          </>
+                        )}
+                        {data.monto_desembolsado && (
+                          <>
+                            monto_desembolsado: {data.monto_desembolsado}
+                            <br />
+                          </>
+                        )}
+                        {data.id_user && (
+                          <>
+                            id_user: {data.id_user}
+                            <br />
+                          </>
+                        )}
+                        {data.monto_contrato && (
+                          <>
+                            monto_contrato: {data.monto_contrato}
+                            <br />
+                          </>
+                        )}
+                        {data.gestion && (
+                          <>
+                            gestion: {data.gestion}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_banco && (
+                          <>
+                            fecha_banco: {data.fecha_banco}
+                            <br />
+                          </>
+                        )}
+                        {data.fecha_vobo && (
+                          <>
+                            fecha_vobo: {data.fecha_vobo}
+                            <br />
+                          </>
+                        )}
+                        {data.proy_cod && (
+                          <>
+                            proy_cod: {data.proy_cod}
+                            <br />
+                          </>
+                        )}
+                        {data.titr_cod && (
+                          <>
+                            titr_cod: {data.titr_cod}
+                            <br />
+                          </>
+                        )}
+                        {data.numero_inst && (
+                          <>
+                            numero_inst: {data.numero_inst}
+                            <br />
+                          </>
+                        )}
+                        {data.procesocontratacion && (
+                          <>
+                            procesocontratacion: {data.procesocontratacion}
+                            <br />
+                          </>
+                        )}
+                        {data.observacion && (
+                          <>
+                            observacion: {data.observacion}
+                            <br />
+                          </>
+                        )}
+                        {data.archivo && (
+                          <>
+                            archivo: {data.archivo}
+                            <br />
+                          </>
+                        )}
+                        {data.justificacion_anulacion && (
+                          <>
+                            justificacion_anulacion:{" "}
+                            {data.justificacion_anulacion}
+                            <br />
+                          </>
+                        )}
+                        {data.id_user_anulacion && (
+                          <>
+                            id_user_anulacion: {data.id_user_anulacion}
+                            <br />
+                          </>
+                        )}
+                        {data.sigepro_id && (
+                          <>
+                            sigepro_id: {data.sigepro_id}
+                            <br />
+                          </>
+                        )}
+                        id_planilla: {data.id_planilla}
+                        <br />
+                        {data.activo && (
+                          <>
+                            activo: {data.activo}
+                            <br />
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Typography>
+                </CardContent>
+              </Collapse>
+            </Card>
+            <br />
+          </div>
+        ))}
+      </div>
     </>
   );
 };

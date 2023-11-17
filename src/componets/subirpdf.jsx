@@ -120,6 +120,14 @@ const SubirPdf = ({ nombreidpdf }) => {
     }
   };
 
+  const handleOpenDialog = () => {
+    setShowUploadDialog(true); // Esta función abrirá el diálogo desde el componente BuscarViviend
+  };
+
+  const handleCloseDialog = () => {
+    setShowUploadDialog(false);
+  };
+
   return (
     <>
       <Dialog
