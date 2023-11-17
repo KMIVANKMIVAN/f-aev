@@ -5,11 +5,15 @@ import BuscarUser from "../../../../componets/buscaruser";
 import CrearUser from "../../../../componets/crearuser";
 import TablaUser from "../../../../componets/tablauser";
 import { useRouter } from "next/navigation";
+
 const UsersTablas = () => {
+  // useStore.getState().setDatoscontratoData([1, 2, 3]);
+
+  // console.log(datoscontratoData);
+
   const router = useRouter();
   const urltable = "/pages/dashboard/usertablas";
   const [showUserTablas, setShowUserTablas] = useState(false);
-
 
   // Este efecto restablecerá el estado cuando se monte el componente
   useEffect(() => {

@@ -848,7 +848,7 @@ const BuscarViviend = () => {
           />
         </div>
       )}
-      {serverError && (
+      {/* {serverError && (
         <Dialog
           open={open}
           onClose={handleClose}
@@ -931,10 +931,10 @@ const BuscarViviend = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      )}
-      {/* {serverError && <p style={{ color: "red" }}>{serverError}</p>} */}
-      {/* {serverErrorVerPdf && <p style={{ color: "red" }}>{serverErrorVerPdf}</p>} */}
-      {/* {errorDeletePdf && <p style={{ color: "red" }}>{errorDeletePdf}</p>} */}
+      )} */}
+      {serverError && <p style={{ color: "red" }}>{serverError}</p>}
+      {serverErrorVerPdf && <p style={{ color: "red" }}>{serverErrorVerPdf}</p>}
+      {errorDeletePdf && <p style={{ color: "red" }}>{errorDeletePdf}</p>}
     </>
   );
 };
