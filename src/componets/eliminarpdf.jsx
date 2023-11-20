@@ -10,11 +10,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
+const EliminarPdf = ({ nombreidpdf }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
+  const [sucess, setSucess] = useState(null);
 
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfBlob, setPdfBlob] = useState(null);
   console.log("aver si llego el nombreidpdf", nombreidpdf);
 
   const handleFileChange = (event) => {
@@ -50,6 +52,7 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
         const pdfBlob = response.data;
         const pdfBlobUrl = URL.createObjectURL(pdfBlob);
         setPdfUrl(pdfBlobUrl);
+        setPdfBlob(pdfBlob);
       } else {
         setError("Error al subir el archivo: " + response.data.message);
       }
@@ -70,18 +73,96 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
 
   const handleClose = () => {
     setOpen(false);
-    onClose(); // Llamar a la función onClose desde Prueba1 para actualizar el estado
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleClickOpen(); // Abre el Dialog cuando el componente se monta
-  }, []);
+  }, []); // El segundo argumento es un array vacío para que se ejecute solo una vez al montarse el componente
+
+  const [showPdf, setShowPdf] = useState(false);
+  const handleDownloadPdf = async () => {
+    if (pdfBlob) {
+      setShowPdf(true); // Mostrar el PDF al recibir la respuesta
+    }
+  };
+
+  const handleOpenPdf = () => {
+    if (pdfBlob) {
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfBlobUrl, "_blank");
+    }
+  };
+
+  const downloadFile = async (fileName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/download/${fileName}`;
+      const token = obtenerToken();
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await fetch(url, { headers });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } else {
+        console.error("Error downloading file");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleOpenDialog = () => {
+    setShowUploadDialog(true); // Esta función abrirá el diálogo desde el componente BuscarViviend
+  };
+
+  const handleCloseDialog = () => {
+    setShowUploadDialog(false);
+  };
+
+  const [errorDeletePdf, setErrorDeletePdf] = useState("");
+
+  const deletePdf = async (partialName) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/delete/${partialName}`;
+
+      const token = obtenerToken();
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.delete(url, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        console.log("PDF eliminado correctamente");
+        setErrorDeletePdf("");
+      } else {
+        setErrorDeletePdf("Error al eliminar el PDF");
+      }
+    } catch (error) {
+      setErrorDeletePdf(
+        "El archivo solicitado no se elimino ¿Estás seguro de que el archivo ha sido subido?"
+      );
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -105,6 +186,14 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
             {error && <p className="mt-2 text-red-500">{error}</p>}
             {success && <p className="mt-2 text-green-500">{success}</p>} */}
           </DialogContentText>
+          {pdfUrl && ( // Mostrar el PDF si pdfUrl no es null
+            <embed
+              src={pdfUrl} // Mostrar la URL del PDF en un componente <embed>
+              type="application/pdf"
+              width="100%"
+              height="600px"
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -137,4 +226,4 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
   );
 };
 
-export default SubirPdf;
+export default EliminarPdf;
