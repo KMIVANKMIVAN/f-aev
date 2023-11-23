@@ -12,7 +12,12 @@ import SendIcon from "@mui/icons-material/Send";
 import Stack from "@mui/material/Stack";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import AcordeonUser from "./acordeonuser";
+
+// import { useDispatch, useSelector } from "react-redux";
+// import { setUserData } from "../app/GlobalRedux/user/userSlice";
+
 const BuscarUser = ({ urltable }) => {
+  // const dispatch = useDispatch();
   const router = useRouter();
 
   const [buscar, setBuscar] = useState("");
@@ -41,6 +46,7 @@ const BuscarUser = ({ urltable }) => {
 
       if (response.status === 200) {
         setDatoscontratoData(response.data);
+        // dispatch(setUserData(response.data));
         setIsDataLoaded(true);
       } else {
         console.error("Error fetching user data");
@@ -262,7 +268,6 @@ const BuscarUser = ({ urltable }) => {
             enableFacetedValues
             initialState={{ density: "compact" }}
           />
-
           <br />
         </div>
       )}

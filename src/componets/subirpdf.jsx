@@ -14,12 +14,52 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
 
+  const [errorSubirPdf, setErrorSubirPdf] = useState(null);
+
   const [pdfUrl, setPdfUrl] = useState(null);
   console.log("aver si llego el nombreidpdf", nombreidpdf);
+
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const [pdfFoundMessage, setPdfFoundMessage] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/documentpdf/buscarpdf/${nombreidpdf}`,
+          {
+            headers: {
+              Authorization: `Bearer ${obtenerToken()}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const pdfFound = response.data;
+          console.log("lo que es en verdad responde", pdfFound);
+          if (pdfFound) {
+            setPdfFoundMessage(pdfFound);
+          } else {
+            setPdfFoundMessage(pdfFound);
+          }
+        }
+      } catch (error) {
+        console.error("Error al buscar el archivo PDF:", error);
+        setPdfFoundMessage("Error al buscar el archivo PDF");
+      }
+    };
+
+    if (nombreidpdf) {
+      fetchData();
+    }
+  }, [nombreidpdf]);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
     setError(null);
+    setErrorSubirPdf(null); // Reiniciar el mensaje de error
+    setSuccessMessage(null);
   };
 
   const handleFileUpload = async () => {
@@ -45,22 +85,32 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
       );
 
       if (response.status === 200) {
-        console.log("Archivo subido con éxito.");
-        setSuccess("Archivo subido con éxito.");
         const pdfBlob = response.data;
         const pdfBlobUrl = URL.createObjectURL(pdfBlob);
         setPdfUrl(pdfBlobUrl);
-      } else {
-        setError("Error al subir el archivo: " + response.data.message);
+
+        const reader = new FileReader();
+        reader.onload = function () {
+          const successText = reader.result; // Contiene el mensaje de éxito como texto
+          setSuccessMessage(successText);
+        };
+        reader.readAsText(pdfBlob);
       }
     } catch (error) {
-      if (error.response && error.response.data) {
-        setError("Error: " + error.response.data.message);
-      } else {
-        setError("Error: " + error.message);
+      // setErrorSubirPdf(`Error: ${error.response.data}`);
+      if (error.response && error.response.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          const errorMessage = reader.result; // Contiene el mensaje de error como texto
+          setErrorSubirPdf(`Error: ${errorMessage}`);
+        };
+        reader.readAsText(error.response.data);
       }
     }
   };
+
+  // console.log("aaa", errorSubirPdf);
+  // console.log("bbb", successMessage);
 
   const [open, setOpen] = React.useState(false);
 
@@ -77,6 +127,8 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
     handleClickOpen(); // Abre el Dialog cuando el componente se monta
   }, []);
 
+  console.log("111 ", pdfFoundMessage);
+
   return (
     <>
       <Dialog
@@ -85,53 +137,58 @@ const SubirPdf = ({ nombreidpdf, openDialog, onClose }) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"¿ESTÁ SEGURO DE SUBIR EL ARCHIVO?"}
-        </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <input
-              className="block w-full text-sm bold text-mi-color-primario
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-md file:border-0
-              file:text-sm file:font-semibold
-              file:bg-mi-color-primario file:text-white
-              hover:file:bg-mi-color-terceario"
-              type="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-            />
-            {/* 
-            {error && <p className="mt-2 text-red-500">{error}</p>}
-            {success && <p className="mt-2 text-green-500">{success}</p>} */}
-          </DialogContentText>
+          {pdfFoundMessage ? (
+            <h2 className="text-center text-red-500">
+              YA SE SUBIÓ EL ARCHIVO PDF
+            </h2>
+          ) : (
+            <>
+              <h2 className="text-center">
+                {"¿ESTÁ SEGURO DE SUBIR EL ARCHIVO?"}
+              </h2>
+              <br />
+              <DialogContentText id="alert-dialog-description">
+                <input
+                  key={selecionarPDF} // Agregar una clave única para que se reinicie el input
+                  value="" // Vaciar el valor del input
+                  className="block w-full text-sm bold text-mi-color-primario
+      file:mr-4 file:py-2 file:px-4
+      file:rounded-md file:border-0
+      file:text-sm file:font-semibold
+      file:bg-mi-color-primario file:text-white
+      hover:file:bg-mi-color-terceario"
+                  type="file"
+                  accept=".pdf"
+                  onChange={cargarElPDF}
+                />
+              </DialogContentText>
+            </>
+          )}
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            style={{
-              color: "red",
-              fontWeight: "bold",
-              transition: "color 0.3s",
-            }}
-            onMouseOver={(e) => (e.target.style.color = "darkred")}
-            onMouseOut={(e) => (e.target.style.color = "red")}
-          >
-            Cerrar
-          </Button>
-          <Button
-            style={{
-              color: "green",
-              fontWeight: "bold",
-              transition: "color 0.3s",
-            }}
-            onMouseOver={(e) => (e.target.style.color = "darkgreen")}
-            onMouseOut={(e) => (e.target.style.color = "green")}
-            onClick={handleFileUpload}
-          >
-            Subir Archivo
-          </Button>
-        </DialogActions>
+        {errorSubirPdf && (
+          <p className="text-center m-2 text-red-500">{errorSubirPdf}</p>
+        )}
+        {successMessage && (
+          <p className="text-center m-2 text-green-500">{successMessage}</p>
+        )}
+        {pdfFoundMessage && ( // Ocultar el botón si pdfFoundMessage es verdadero
+          <DialogActions>
+            <Button onClick={handleClose}>Cerrar</Button>
+          </DialogActions>
+        )}
+        {!pdfFoundMessage && ( // Mostrar el botón si pdfFoundMessage es falso
+          <DialogActions>
+            <Button
+              variant="outlined"
+              onClick={handleFileUpload}
+              disabled={!selectedFile}
+            >
+              Subir Archivo
+            </Button>
+            <Button onClick={handleClose}>Cerrar</Button>
+          </DialogActions>
+        )}
       </Dialog>
     </>
   );

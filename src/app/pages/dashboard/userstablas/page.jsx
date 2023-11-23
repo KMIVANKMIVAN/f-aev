@@ -1,4 +1,5 @@
 "use client";
+// import { useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
 
 import BuscarUser from "../../../../componets/buscaruser";
@@ -15,6 +16,8 @@ const UsersTablas = () => {
   const urltable = "/pages/dashboard/usertablas";
   const [showUserTablas, setShowUserTablas] = useState(false);
 
+  // const userData = useSelector((state) => state.user.userData);
+
   // Este efecto restablecerá el estado cuando se monte el componente
   useEffect(() => {
     setShowUserTablas(false);
@@ -28,6 +31,16 @@ const UsersTablas = () => {
         </h2>
         <CrearUser urltable={urltable} />
       </div>
+
+      {/* {userData && userData.length > 0 && (
+        <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
+          {userData.map((user) => (
+            <div key={user.id}>
+              <p>ID: {user.id}</p>
+            </div>
+          ))}
+        </div>
+      )} */}
 
       <br />
       <BuscarUser

@@ -1,10 +1,13 @@
-import { Providers } from "./GlobalRedux/provider";
+// import { Providers } from "./GlobalRedux/provider";
 import "./globals.css";
 import Navbar from "../componets/navbar";
 import Footer from "../componets/footer";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { useDispatch, useSelector } from "react-redux";
+
+import { Provider } from "react-redux";
+
+import store from "./GlobalRedux/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,11 +24,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <Providers>
+        {/* <Provider store={store}> */}
           <Navbar />
           {children}
           <Footer />
-        </Providers>
+        {/* </Provider> */}
       </body>
     </html>
   );
