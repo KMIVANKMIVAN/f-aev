@@ -23,6 +23,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import BackupTableIcon from "@mui/icons-material/BackupTable";
 
 import DatosComplViviend from "./datoscomplviviend";
+import DatosComplViviend2 from "./datoscomplviviend2";
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -108,6 +109,17 @@ const BuscarViviend = ({ proy_cod }) => {
     }
   };
 
+  /* const [mostrarComponente, setMostrarComponente] = useState(true);
+
+  const toggleMostrarComponente = () => {
+    setMostrarComponente(mostrarComponente);
+  };
+  const [mostrarComponente2, setMostrarComponente2] = useState(true);
+
+  const toggleMostrarComponente2 = () => {
+    setMostrarComponente2(mostrarComponente2);
+  }; */
+
   return (
     <>
       <h2 className="p-3 text-mi-color-terceario text-2xl font-bold">Buscar</h2>
@@ -169,10 +181,10 @@ const BuscarViviend = ({ proy_cod }) => {
                     right: 0,
                     bottom: 0,
                     left: 0,
-                    backgroundImage: 'url("/casa4.jpg")',
+                    backgroundColor: '#004f81',
                     backgroundSize: "100%",
                     backgroundPosition: "center",
-                    opacity: 0.4,
+                    opacity: 0.2,
                   },
                 }}
               >
@@ -216,21 +228,23 @@ const BuscarViviend = ({ proy_cod }) => {
                         endIcon={<VerticalAlignTopIcon size="large" />}
                         onClick={(event) => {
                           setSelectedContCod(data.cont_cod);
+                          // toggleMostrarComponente();
                         }}
                       >
                         Subir PDFs
                       </Button>
-                      <Button
+{/*                       <Button
                         size="small"
                         color="success"
                         variant="outlined"
                         endIcon={<VerticalAlignBottomIcon size="large" />}
                         onClick={(event) => {
                           setSelectedContCod(data.cont_cod);
+                          // toggleMostrarComponente2();
                         }}
                       >
                         Bajar PDFs
-                      </Button>
+                      </Button> */}
                     </ButtonGroup>
                   </Box>
                   <ExpandMore
@@ -317,6 +331,30 @@ const BuscarViviend = ({ proy_cod }) => {
       </div>
       <br />
       <DatosComplViviend selectedContCod={selectedContCod} />
+      {/* {mostrarComponente && (
+        <DatosComplViviend selectedContCod={selectedContCod} />
+      )}
+      <br />
+      {mostrarComponente2 && (
+        <DatosComplViviend2 selectedContCod={selectedContCod} />
+      )} */}
+      {/* <DatosComplViviend2 selectedContCod={selectedContCod} /> */}
+      {/* <div className="flex justify-center pt-5">
+        <Button variant="outlined" onClick={toggleMostrarComponente}>
+          {mostrarComponente ? "Ocultar" : "Mostrar"} Componente
+        </Button>
+      </div>
+      {mostrarComponente && (
+        <DatosComplViviend selectedContCod={selectedContCod} />
+      )}
+      <div className="flex justify-center pt-5">
+        <Button variant="outlined" onClick={toggleMostrarComponente2}>
+          {mostrarComponente2 ? "Ocultar" : "Mostrar"} Componente2
+        </Button>
+      </div>
+      {mostrarComponente2 && (
+        <DatosComplViviend2 selectedContCod={selectedContCod} />
+      )} */}
     </>
   );
 };

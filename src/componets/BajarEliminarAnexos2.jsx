@@ -25,7 +25,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function SubirBajarEliminarPdf({ nombrepdf }) {
+export function BajarEliminarAnexos({
+  nombrepdf,
+  titulo,
+  id,
+  refrescarFunction,
+}) {
   const [respuestas, setRespuestas] = useState(null);
   const [respuestasError, setErrorRespuestas] = useState(null);
   const [respuestasErrorDescargar, setErrorRespuestasDescargar] =
@@ -142,19 +147,46 @@ export function SubirBajarEliminarPdf({ nombrepdf }) {
 
   const eliminarPdf = async () => {
     try {
-      const response = await axios.delete(`${urlBase}/delete/${nombrepdf}`, {
-        headers,
-      });
+      const response = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/respaldodesembolsos/${id}/${nombrepdf}`,
+        {
+          headers,
+        }
+      );
 
       if (response.status === 200 || response.status === 204) {
         setRespuestasEliminar(`RS: ${response.data}`);
         setAbrirEliminar(true);
       }
     } catch (error) {
-      setErrorRespuestasEliminar(
-        `RS: ${error.response?.data}` || `RS: ${error.message}`
-      );
-      setAbrirErrorEliminar(true);
+      let errorMessage = "Error desconocido al descargar el PDF";
+
+      if (error.response && error.response.data instanceof Blob) {
+        // Si hay una respuesta de error desde el servidor
+        const blob = await error.response.data;
+        const reader = new FileReader();
+        reader.onload = () => {
+          errorMessage = reader.result;
+          setErrorRespuestasDescargar(`RS: ${errorMessage}`);
+          // Opcionalmente, puedes setear abrirErrorDescarga a true si deseas abrir el diálogo de error automáticamente
+          // setAbrirErrorDescarga(true);
+        };
+        reader.readAsText(blob);
+      } else if (error.response && error.response.data) {
+        // Si hay un mensaje de error del servidor en formato no-Blob
+        errorMessage = error.response.data;
+        setErrorRespuestasDescargar(`RS: ${errorMessage}`);
+        // Opcionalmente, puedes setear abrirErrorDescarga a true si deseas abrir el diálogo de error automáticamente
+        // setAbrirErrorDescarga(true);
+      } else {
+        // Otros casos de error
+        errorMessage = error.message || "Error desconocido al descargar el PDF";
+        setErrorRespuestasDescargar(`RS: ${errorMessage}`);
+        // Opcionalmente, puedes setear abrirErrorDescarga a true si deseas abrir el diálogo de error automáticamente
+        // setAbrirErrorDescarga(true);
+      }
+      // Si prefieres abrir el diálogo de error manualmente, puedes hacerlo con:
+      setAbrirErrorDescarga(true);
     }
   };
 
@@ -193,7 +225,15 @@ export function SubirBajarEliminarPdf({ nombrepdf }) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setAbrirErrorEliminar(false)}>Cerrar</Button>
+            {/* <Button onClick={() => setAbrirErrorEliminar(false)}>Cerrar</Button> */}
+            <Button
+              onClick={() => {
+                refrescarFunction(); // Llamada a la función refrescarDatos desde aquí
+                setAbrirErrorEliminar(false);
+              }}
+            >
+              Cerrar
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -215,7 +255,15 @@ export function SubirBajarEliminarPdf({ nombrepdf }) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setAbrirEliminar(false)}>Cerrar</Button>
+            {/* <Button onClick={() => setAbrirEliminar(false)}>Cerrar</Button> */}
+            <Button
+              onClick={() => {
+                refrescarFunction(); // Llamada a la función refrescarDatos desde aquí
+                setAbrirEliminar(false);
+              }}
+            >
+              Cerrar
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -236,88 +284,57 @@ export function SubirBajarEliminarPdf({ nombrepdf }) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setAbrirErrorDescarga(false)}>Cerrar</Button>
+            {/* <Button onClick={() => setAbrirErrorDescarga(false)}>Cerrar</Button> */}
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  refrescarFunction(); // Llamada a la función refrescarDatos desde aquí
+                  setAbrirErrorDescarga(false);
+                }}
+              >
+                Cerrar
+              </Button>
+            </DialogActions>
           </DialogActions>
         </Dialog>
       )}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          "& > *": {
-            m: 1,
-          },
-        }}
-      >
-        <ButtonGroup variant="text" aria-label="text button group">
-          <Tooltip title="Subir PDF" placement="left-end">
-            <Button
-              color="error"
-              size="small"
-              component="span"
-              endIcon={<UploadRoundedIcon size="large" />}
-              onClick={abrirGuardarPdf}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Descargar PDF" placement="top">
-            <Button
-              size="small"
-              color="error"
-              onClick={descargarPdf}
-              endIcon={<PictureAsPdfRoundedIcon size="large" />}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Eliminar PDF" placement="right-start">
-            <Button
-              size="small"
-              color="error"
-              onClick={eliminarPdf}
-              endIcon={<DeleteRoundedIcon size="large" />}
-            ></Button>
-          </Tooltip>
-        </ButtonGroup>
-      </Box>
-      <Dialog
-        open={abrirGuardar}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={cerrarGuardarPdf}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle className="text-center">
-          {"Subir Instructivo PDF"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            <div className="flex justify-center items-center flex-col">
-              <input
-                className="block w-full text-sm bold text-mi-color-primario
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-md file:border-0
-      file:text-sm file:font-semibold
-      file:bg-mi-color-primario file:text-white
-      hover:file:bg-mi-color-terceario"
-                type="file"
-                accept=".pdf"
-                onChange={cargarElPDF}
-              />
-            </div>
-          </DialogContentText>
-        </DialogContent>
-        {respuestasError && (
-          <p className="text-center m-2 text-red-500">{respuestasError}</p>
-        )}
-        {respuestas && (
-          <p className="text-center m-2 text-green-500">{respuestas}</p>
-        )}
-        <DialogActions>
-          <Button disabled={!selecionarPDF} onClick={guardarPdf}>
-            Subir PDF
-          </Button>
-          <Button onClick={cerrarGuardarPdf}>Cerrar</Button>
-        </DialogActions>
-      </Dialog>
+
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        <div>
+          <p className="p-1">{titulo}</p>
+        </div>
+        <div>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              "& > *": {
+                m: 1,
+              },
+            }}
+          >
+            <ButtonGroup variant="text" aria-label="text button group">
+              <Tooltip title="Descargar PDF" placement="top">
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={descargarPdf}
+                  endIcon={<PictureAsPdfRoundedIcon size="large" />}
+                ></Button>
+              </Tooltip>
+              <Tooltip title="Eliminar PDF" placement="right-start">
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={eliminarPdf}
+                  endIcon={<DeleteRoundedIcon size="large" />}
+                ></Button>
+              </Tooltip>
+            </ButtonGroup>
+          </Box>
+        </div>
+      </div>
     </>
   );
 }

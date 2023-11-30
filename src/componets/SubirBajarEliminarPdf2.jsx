@@ -25,7 +25,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function SubirBajarEliminarPdf({ nombrepdf }) {
+export function SubirBajarEliminarPdf2({ nombrepdf }) {
   const [respuestas, setRespuestas] = useState(null);
   const [respuestasError, setErrorRespuestas] = useState(null);
   const [respuestasErrorDescargar, setErrorRespuestasDescargar] =
@@ -251,15 +251,7 @@ export function SubirBajarEliminarPdf({ nombrepdf }) {
         }}
       >
         <ButtonGroup variant="text" aria-label="text button group">
-          <Tooltip title="Subir PDF" placement="left-end">
-            <Button
-              color="error"
-              size="small"
-              component="span"
-              endIcon={<UploadRoundedIcon size="large" />}
-              onClick={abrirGuardarPdf}
-            ></Button>
-          </Tooltip>
+         
           <Tooltip title="Descargar PDF" placement="top">
             <Button
               size="small"

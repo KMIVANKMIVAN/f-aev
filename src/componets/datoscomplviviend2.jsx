@@ -16,7 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 
-import { BajarEliminarAnexos } from "./BajarEliminarAnexos";
+import { BajarEliminarAnexos2 } from "./BajarEliminarAnexos";
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -29,8 +29,8 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-import { SubirBajarEliminarPdf } from "./SubirBajarEliminarPdf";
-import { AnexsosPdf } from "./AnexsosPdf";
+import { SubirBajarEliminarPdf2 } from "./SubirBajarEliminarPdf2";
+import { AnexsosPdf2 } from "./AnexsosPdf2";
 
 function formatearNumero(numero) {
   // Verificar si el número es decimal
@@ -47,7 +47,7 @@ function formatearNumero(numero) {
   return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-const DatosComplViviend = ({ selectedContCod }) => {
+const DatosComplViviend2 = ({ selectedContCod }) => {
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
 
@@ -66,7 +66,7 @@ const DatosComplViviend = ({ selectedContCod }) => {
             Authorization: `Bearer ${token}`,
           };
 
-          const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/compleja/${selectedContCod}`;
+          const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/datoscontrato/compleja2/${selectedContCod}`;
 
           const response = await axios.get(url, { headers });
 
@@ -145,11 +145,13 @@ const DatosComplViviend = ({ selectedContCod }) => {
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
-        <p className="text-c1p text-1xl font-bold">
+        <p className="text-c1p text-2xl font-bold">BAJAR PDFs</p>
+        <br />
+        <p className="text-c1p text-2xl font-bold">
           PROYECTO: {contcodComplejaData[0]?.objeto}
         </p>
         <br />
-        <p className="text-c1p text-1xl font-bold">
+        <p className="text-c1p text-2xl font-bold">
           CODIGO: {contcodComplejaData[0]?.proy_cod}
         </p>
         <br />
@@ -170,10 +172,10 @@ const DatosComplViviend = ({ selectedContCod }) => {
                     right: 0,
                     bottom: 0,
                     left: 0,
-                    backgroundColor: "#44a4a6",
+                    backgroundImage: 'url("/casa3.jpg")',
                     backgroundSize: "100%",
                     backgroundPosition: "center",
-                    opacity: 0.3,
+                    opacity: 0.2,
                   },
                 }}
               >
@@ -184,26 +186,15 @@ const DatosComplViviend = ({ selectedContCod }) => {
                         {" "}
                         <strong>INSTR. DESEN. AEV</strong>
                       </h2>
-                      <SubirBajarEliminarPdf
+                      <SubirBajarEliminarPdf2
                         nombrepdf={data.iddesem + "-AEV"}
                       />
-                      <h2 className="text-center text-mi-color-primario">
-                        {" "}
-                        <strong>ANEXOS AEV</strong>
-                      </h2>
-                      <div className="pb-2 flex  justify-center items-center">
-                        {/* <AnexsosPdf nombrepdf={data.iddesem} /> */}
-                        <AnexsosPdf
-                          nombrepdf={data.iddesem}
-                          refrescarFunction={refrescarDatos}
-                        />
-                      </div>
                     </div>
                     <div>
                       <h2 className="text-center text-blue-500">
                         <strong>INSTR. DESEN. BUSA</strong>
                       </h2>
-                      <SubirBajarEliminarPdf
+                      <SubirBajarEliminarPdf2
                         nombrepdf={data.iddesem + "-BUSA"}
                       />
                     </div>
@@ -280,7 +271,7 @@ const DatosComplViviend = ({ selectedContCod }) => {
                               Actualizar
                             </Button>
                             {respuestaFindallone.map((item, i) => (
-                              <BajarEliminarAnexos
+                              <BajarEliminarAnexos2
                                 key={i}
                                 nombrepdf={item.archivo}
                                 titulo={item.detalle}
@@ -382,4 +373,4 @@ const DatosComplViviend = ({ selectedContCod }) => {
   );
 };
 
-export default DatosComplViviend;
+export default DatosComplViviend2;

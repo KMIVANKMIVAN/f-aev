@@ -1,16 +1,23 @@
 "use client";
 import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
+import { MRT_Localization_ES } from "material-react-table/locales/es";
+
 import axios from "axios";
 import { obtenerToken } from "../utils/auth";
 
 import SubirPdf from "./subirpdf";
+
+import { createTheme, ThemeProvider, useTheme } from "@mui/material";
+import { esES } from "@mui/material/locale";
 
 const ViviendanuevaTablaComponent = () => {
   const [datoscontratoData, setDatoscontratoData] = useState([]);
   const [contcodData, setContcodData] = useState([]);
   const [contcodComplejaData, setContcodComplejaData] = useState([]);
   const [selectedContCod, setSelectedContCod] = useState(null);
+
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -464,18 +471,21 @@ const ViviendanuevaTablaComponent = () => {
           <p className="text-c1p text-2xl font-bold">
             CODIGO: {contcodComplejaData[0]?.proy_cod || ""}
           </p>
-          <MaterialReactTable
-            enableHiding={false}
-            enableGlobalFilter={false}
-            enableColumnActions={false}
-            enableColumnFilters={false}
-            // enablePagination={false}
-            enableSorting={false}
-            columns={columns3}
-            data={contcodComplejaData}
-            enableFacetedValues
-            initialState={{ density: "compact", showColumnFilters: true }}
-          />
+          <ThemeProvider theme={createTheme(theme, esES)}>
+            <MaterialReactTable
+              enableHiding={false}
+              enableGlobalFilter={false}
+              enableColumnActions={false}
+              enableColumnFilters={false}
+              // enablePagination={false}
+              enableSorting={false}
+              columns={columns3}
+              data={contcodComplejaData}
+              enableFacetedValues
+              initialState={{ density: "compact", showColumnFilters: true }}
+              localization={MRT_Localization_ES}
+            />
+          </ThemeProvider>
         </div>
       )}
     </>
