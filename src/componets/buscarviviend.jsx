@@ -174,18 +174,7 @@ const BuscarViviend = ({ proy_cod }) => {
                   height: "100%", // Ajustar la altura al 100% del contenedor padre
                   width: "100%", // Ajustar el ancho al 100% del contenedor padre
                   position: "relative",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    backgroundColor: '#004f81',
-                    backgroundSize: "100%",
-                    backgroundPosition: "center",
-                    opacity: 0.2,
-                  },
+
                 }}
               >
                 <CardContent>
