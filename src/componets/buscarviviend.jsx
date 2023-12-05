@@ -64,6 +64,8 @@ const BuscarViviend = ({ proy_cod }) => {
 
   const [inputValue, setInputValue] = useState("");
 
+  const [updateComponent, setUpdateComponent] = useState(0);
+
   const handleExpandClick = (index) => {
     setExpandedItems({
       ...expandedItems,
@@ -97,18 +99,22 @@ const BuscarViviend = ({ proy_cod }) => {
       const response = await axios.get(url, { headers });
 
       if (response.status === 200) {
-        console.log("hola0");
-        console.log(response.data);
+        // console.log("hola0");
+        // console.log(response.data);
         setDatoscontratoData(response.data);
         setSelectedContCod(0);
       } else {
-        console.error("Error fetching user data");
+        // console.error("Error fetching user data");
       }
     } catch (error) {
-      console.error("Error:", error);
+      // console.error("Error:", error);
     }
   };
 
+  const handleUploadPDFs = (dataContCod) => {
+    setSelectedContCod(dataContCod);
+    setUpdateComponent((prev) => prev + 1); // Incrementa el estado para forzar el renderizado
+  };
   /* const [mostrarComponente, setMostrarComponente] = useState(true);
 
   const toggleMostrarComponente = () => {
@@ -174,7 +180,6 @@ const BuscarViviend = ({ proy_cod }) => {
                   height: "100%", // Ajustar la altura al 100% del contenedor padre
                   width: "100%", // Ajustar el ancho al 100% del contenedor padre
                   position: "relative",
-
                 }}
               >
                 <CardContent>
@@ -215,14 +220,11 @@ const BuscarViviend = ({ proy_cod }) => {
                         color="success"
                         variant="outlined"
                         endIcon={<VerticalAlignTopIcon size="large" />}
-                        onClick={(event) => {
-                          setSelectedContCod(data.cont_cod);
-                          // toggleMostrarComponente();
-                        }}
+                        onClick={(event) => handleUploadPDFs(data.cont_cod)}
                       >
                         Subir PDFs
                       </Button>
-{/*                       <Button
+                      {/*                       <Button
                         size="small"
                         color="success"
                         variant="outlined"
@@ -319,31 +321,10 @@ const BuscarViviend = ({ proy_cod }) => {
         </div>
       </div>
       <br />
-      <DatosComplViviend selectedContCod={selectedContCod} />
-      {/* {mostrarComponente && (
-        <DatosComplViviend selectedContCod={selectedContCod} />
-      )}
-      <br />
-      {mostrarComponente2 && (
-        <DatosComplViviend2 selectedContCod={selectedContCod} />
-      )} */}
-      {/* <DatosComplViviend2 selectedContCod={selectedContCod} /> */}
-      {/* <div className="flex justify-center pt-5">
-        <Button variant="outlined" onClick={toggleMostrarComponente}>
-          {mostrarComponente ? "Ocultar" : "Mostrar"} Componente
-        </Button>
-      </div>
-      {mostrarComponente && (
-        <DatosComplViviend selectedContCod={selectedContCod} />
-      )}
-      <div className="flex justify-center pt-5">
-        <Button variant="outlined" onClick={toggleMostrarComponente2}>
-          {mostrarComponente2 ? "Ocultar" : "Mostrar"} Componente2
-        </Button>
-      </div>
-      {mostrarComponente2 && (
-        <DatosComplViviend2 selectedContCod={selectedContCod} />
-      )} */}
+      <DatosComplViviend
+        key={updateComponent}
+        selectedContCod={selectedContCod}
+      />
     </>
   );
 };

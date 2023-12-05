@@ -22,6 +22,32 @@ import { BajarEliminarAnexos } from "./BajarEliminarAnexos";
 import { SubirBajarEliminarPdf } from "./SubirBajarEliminarPdf";
 import { AnexsosPdf } from "./AnexsosPdf";
 
+import { makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
+
+import { obtenerDatosFindAllOne } from "./api";
+
+import Page from "./page";
+
+const useStyles = makeStyles({
+  root: {
+    width: "100%",
+  },
+  container: {
+    // maxHeight: 440,
+  },
+  tableCell: {
+    fontSize: "0.75rem", // Tamaño de letra "xs" (extra small)
+  },
+});
+
 function formatearNumero(numero) {
   // Verificar si el número es decimal
   const esDecimal = numero % 1 !== 0;
@@ -43,9 +69,9 @@ const DatosComplViviend = ({ selectedContCod }) => {
 
   const [errorcontcodComplejaData, setErrorContcodComplejaData] = useState([]);
 
-  const [respuestaFindallone, setRespuestaFindallone] = useState(null);
-  const [errorRespuestaFindallone, setErrorRespuestaFindallone] =
-    useState(null);
+  const classes = useStyles();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,16 +87,16 @@ const DatosComplViviend = ({ selectedContCod }) => {
           const response = await axios.get(url, { headers });
 
           if (response.status === 200) {
-            console.log("Datos recibidos:", response.data);
+            // console.log("Datos recibidos:", response.data);
             setContcodComplejaData(response.data);
           } else {
-            console.error("Error al obtener los datos 1:", response.statusText);
+            // console.error("Error al obtener los datos 1:", response.statusText);
             setErrorContcodComplejaData(
               `Error en el estado de respues, estado: ${response.statusText}`
             );
           }
         } catch (error) {
-          console.error("Error al obtener los datos 2:", error);
+          // console.error("Error al obtener los datos 2:", error);
           setErrorContcodComplejaData(`Error del servidor: ${error}`);
         }
       }
@@ -89,35 +115,12 @@ const DatosComplViviend = ({ selectedContCod }) => {
       ...expandedItems,
       [index]: !expandedItems[index],
     });
-    obtenerDatosFindAllOne();
-  };
-
-  const obtenerDatosFindAllOne = async () => {
-    try {
-      const token = obtenerToken();
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
-
-      // const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/respaldodesembolsos/findallone/57246`;
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL_BACKEND}/respaldodesembolsos/findallone/${contcodComplejaData[0]?.iddesem}`;
-
-      const response = await axios.get(url, { headers });
-
-      if (response.status === 200) {
-        console.log("Datos recibidos:", response.data);
-        setRespuestaFindallone(response.data);
-        setErrorRespuestaFindallone(null);
-      } else {
-        console.error("Error al obtener los datos:", response.statusText);
-        setErrorRespuestaFindallone(
-          `Error en el estado de respuesta, estado: ${response.statusText}`
-        );
-      }
-    } catch (error) {
-      console.error("Error al obtener los datos:", error);
-      setErrorRespuestaFindallone(`Error del servidor: ${error}`);
-    }
+    // Llama a obtenerDatosFindAllOne aquí
+    obtenerDatosFindAllOne(
+      selectedContCod,
+      setContcodComplejaData,
+      setErrorContcodComplejaData
+    );
   };
 
   const handleExpandClick2 = (index) => {
@@ -129,12 +132,42 @@ const DatosComplViviend = ({ selectedContCod }) => {
     obtenerDatosFindAllOne();
   };
 
-  console.log("111");
-  console.log("respuestaFindallone:", respuestaFindallone);
   let totalMulta = 0;
   let totalDescuentoAntiReten = 0;
   let totalMontoFisico = 0;
   let totalMontoDesembolsado = 0;
+
+  /* const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }; */
+
+  const columns = [
+    { id: "iddesem_aev", label: "INSTR. DESEN. AEV", minWidth: 50 },
+    { id: "iddesem_anexo", label: "ANEXOS AEV", minWidth: 300 },
+    { id: "iddesem_busa", label: "INSTR. DESEN. BUSA", minWidth: 50 },
+    { id: "multa", label: "MULTA", minWidth: 150 },
+    { id: "descuento_anti_reten", label: "DESCUENTO ANTICIPO", minWidth: 150 },
+    { id: "monto_fisico", label: "MONTO FISICO", minWidth: 150 },
+    { id: "monto_desembolsado", label: "MONTO DESEMBOLSADO", minWidth: 150 },
+    { id: "detalle", label: "TIPO PLANILLA", minWidth: 300 },
+    { id: "iddesem", label: "ID", minWidth: 50 },
+    { id: "fechabanco", label: "FECHA ENVIO AL BANCO", minWidth: 50 },
+    { id: "fecha_generado", label: "FECHA INICIO PLANILLA", minWidth: 50 },
+    { id: "fecha_abono", label: "FECHA DE ABONO", minWidth: 50 },
+    { id: "numero_factura", label: "NUMERO DE FACTURA", minWidth: 50 },
+    { id: "numero_inst", label: "OBSERVACIONES DE PAGO", minWidth: 50 },
+    { id: "cuentatitular", label: "TITULAR", minWidth: 50 },
+    // { id: "", label: "", minWidth: 50 }
+  ];
+
+  // Suponiendo que contcodComplejaData es un array de objetos con propiedades correspondientes a las columnas
+  const rows = contcodComplejaData;
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-1 py-1 lg:px-4">
@@ -146,217 +179,98 @@ const DatosComplViviend = ({ selectedContCod }) => {
           CODIGO: {contcodComplejaData[0]?.proy_cod}
         </p>
         <br />
-        <div style={{ overflowX: "auto", maxWidth: "100%" }}>
-          {contcodComplejaData.map((data, dataIndex) => (
-            <div key={dataIndex} style={{ marginBottom: "20px" }}>
-              <Card>
-                <CardContent>
-                  <div style={{ overflowX: "auto", maxWidth: "100%" }}>
-                    <div
-                      className="text-xs grid grid-cols-10"
-                      style={{
-                        gridTemplateColumns: "repeat(10, minmax(150px, 1fr))",
-                        gap: "10px", // Ajusta el espaciado entre columnas
-                      }}
-                    >
-                      <div className="border-r-2 border-b-slate-800">
-                        <h2 className="text-center  text-mi-color-primario">
-                          {" "}
-                          <strong>INSTR. DESEN. AEV</strong>
-                        </h2>
-                        <SubirBajarEliminarPdf
-                          nombrepdf={data.iddesem + "-AEV"}
-                        />
-                        <h2 className="text-center text-mi-color-primario">
-                          {" "}
-                          <strong>ANEXOS AEV</strong>
-                        </h2>
-                        <div className="pb-2 flex  justify-center items-center">
-                          {/* <AnexsosPdf nombrepdf={data.iddesem} /> */}
-                          <AnexsosPdf
-                            nombrepdf={data.iddesem}
-                            refrescarFunction={refrescarDatos}
-                          />
-                        </div>
-                      </div>
-                      <div className=" border-r-2 border-b-slate-800">
-                        <h2 className="text-center text-blue-500">
-                          <strong>INSTR. DESEN. BUSA</strong>
-                        </h2>
-                        <SubirBajarEliminarPdf
-                          nombrepdf={data.iddesem + "-BUSA"}
-                        />
-                      </div>
-                      <div className="text-center border-r-2 border-b-slate-800 ">
-                        <strong>ANEXOS AEV</strong>
-                        {errorRespuestaFindallone == null &&
-                          respuestaFindallone && (
-                            <>
-                              <Button
-                                endIcon={<AutorenewIcon size="large" />}
-                                onClick={refrescarDatos}
-                              >
-                                Actualizar
-                              </Button>
-                              {respuestaFindallone.map((item, i) => (
-                                <BajarEliminarAnexos
-                                  key={i}
-                                  nombrepdf={item.archivo}
-                                  titulo={item.detalle}
-                                  id={item.id}
-                                  refrescarFunction={refrescarDatos}
+      </div>
+      <Paper className={classes.root}>
+        <TableContainer className={classes.container}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ minWidth: column.minWidth, textAlign: "center" }}
+                    className={classes.tableCell}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                      {columns.map((column) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            style={{ textAlign: "center" }}
+                            className={classes.tableCell}
+                          >
+                            {column.id === "multa" ||
+                            column.id === "descuento_anti_reten" ||
+                            column.id === "monto_fisico" ||
+                            column.id === "monto_desembolsado" ? (
+                              formatearNumero(value)
+                            ) : column.id === "iddesem_aev" ? (
+                              <>
+                                <h2 className="text-center  text-mi-color-primario">
+                                  {" "}
+                                  <strong>INSTR. DESEN. AEV</strong>
+                                </h2>
+                                <SubirBajarEliminarPdf
+                                  nombrepdf={row.iddesem + "-AEV"}
                                 />
-                              ))}
-                            </>
-                          )}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        <strong className="text-mi-color-secundario">
-                          MULTA:
-                        </strong>{" "}
-                        {formatearNumero(data.multa)}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        <strong className="text-mi-color-secundario">
-                          DESCUENTO ANTICIPO:
-                        </strong>
-                        <br />
-                        {formatearNumero(data.descuento_anti_reten)}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        <strong className="text-mi-color-secundario">
-                          MONTO FISICO:
-                        </strong>
-                        <br />
-                        {formatearNumero(data.monto_fisico)}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        {data.monto_desembolsado && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              MONTO DESEMBOLSADO:
-                            </strong>
-                            <br />
-                            {formatearNumero(data.monto_desembolsado)}
-                          </>
-                        )}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        {data.detalle && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              TIPO PLANILLA:
-                            </strong>
-                            <br />
-                            {data.detalle}
-                          </> //RELACIONAR A TABLA TIPO PLANILLA
-                        )}
-                      </div>
-                      <div className="px-1 border-r-2 border-b-slate-800">
-                        {data.iddesem && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              ID:
-                            </strong>{" "}
-                            {data.iddesem}
-                            <br />
-                          </>
-                        )}
-                        {data.fechabanco && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              FECHA ENVIO AL BANCO:
-                            </strong>{" "}
-                            {data.fechabanco}
-                            <br />
-                          </>
-                        )}
-                        {data.fecha_generado && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              FECHA INICIO PLANILLA:
-                            </strong>{" "}
-                            {data.fecha_generado}
-                          </>
-                        )}
-                      </div>
-                      <div className="px-1">
-                        {data.fecha_abono && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              FECHA DE ABONO:
-                            </strong>{" "}
-                            {data.fecha_abono}
-                            <br />
-                          </>
-                        )}
-                        {data.numero_factura && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              NUMERO DE FACTURA:
-                            </strong>{" "}
-                            {data.numero_factura}
-                            <br />
-                          </>
-                        )}
-                        {data.observaciones_pago && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              OBSERVACIONES DE PAGO:
-                            </strong>{" "}
-                            {data.observaciones_pago}
-                          </>
-                        )}
-                        {data.numero_inst && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              NUMERO DE INSTRUCTIVO:
-                            </strong>{" "}
-                            {data.numero_inst}
-                            <br />
-                          </>
-                        )}
-                        {data.titular && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              TITULAR:
-                            </strong>{" "}
-                            {data.titular}
-                            <br />
-                          </> ///RELACIONAR CON EL NUMERO DE CUENTA Y TUTULAR
-                        )}
-                        {data.cuentatitular && (
-                          <>
-                            <strong className="text-mi-color-secundario">
-                              CUENTA DEL TITULAR:
-                            </strong>{" "}
-                            {data.cuentatitular}
-                          </> ///RELACIONAR CON EL NUMERO DE CUENTA Y TUTULAR
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-        </div>
-        <Card>
-          <CardContent>
-            <div style={{ overflowX: "auto", maxWidth: "100%" }}>
-              <div
-                className="text-xs grid grid-cols-10"
-                style={{
-                  gridTemplateColumns: "repeat(10, minmax(150px, 1fr))",
-                  gap: "10px", // Ajusta el espaciado entre columnas
-                }}
-              >
-                <div className="pl-5">
+                                <h2 className="text-center text-mi-color-primario">
+                                  {" "}
+                                  <strong>ANEXOS AEV</strong>
+                                </h2>
+                                <div className="pb-2 flex  justify-center items-center">
+                                  {/* <AnexsosPdf
+                                    nombrepdf={row.iddesem}
+                                  /> */}
+                                  <AnexsosPdf nombrepdf={row.iddesem} />
+                                </div>
+                              </>
+                            ) : column.id === "iddesem_anexo" ? (
+                              // Contenido para INSTR. DESEN. BUSA
+                              <>
+                                {/* <BajarEliminarAnexos nombrepdf={row.iddesem} /> */}
+                                <BajarEliminarAnexos nombrepdf={row.iddesem} />
+                              </>
+                            ) : column.id === "iddesem_busa" ? (
+                              // Contenido para INSTR. DESEN. BUSA
+                              <>
+                                <h2 className="text-center text-blue-500">
+                                  <strong>INSTR. DESEN. BUSA</strong>
+                                </h2>
+                                <SubirBajarEliminarPdf
+                                  nombrepdf={row.iddesem + "-BUSA"}
+                                />
+                              </>
+                            ) : column.format && typeof value === "number" ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+              <TableRow>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                <TableCell style={{ textAlign: "right" }}>
                   <strong className=" text-mi-color-secundario">TOTAL </strong>
-                </div>
-                <div></div>
-                <div className="px-1 border-r-2 border-b-slate-800"></div>
-                <div className="px-1 border-r-2 border-b-slate-800">
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
                   <strong className=" text-mi-color-secundario">= </strong>
                   {contcodComplejaData.map((data, index) => {
                     totalMulta += data.multa;
@@ -368,31 +282,25 @@ const DatosComplViviend = ({ selectedContCod }) => {
                     return null;
                   })}
                   {formatearNumero(totalMulta)}
-                </div>
-                <div className="px-1 border-r-2 border-b-slate-800">
-                  {/* Mostrar total de Descuento Anti Reten */}
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
                   <strong className="text-mi-color-secundario">= </strong>
                   {formatearNumero(totalDescuentoAntiReten)}
-                </div>
-                <div className="px-1 border-r-2 border-b-slate-800">
-                  {/* Mostrar total de Monto Físico */}
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
                   <strong className="text-mi-color-secundario">= </strong>
                   {formatearNumero(totalMontoFisico)}
-                </div>
-                <div className="px-1 border-r-2 border-b-slate-800">
-                  {/* Mostrar total de Monto Desembolsado */}
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
                   <strong className="text-mi-color-secundario">= </strong>
                   {formatearNumero(totalMontoDesembolsado)}
-                </div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+      <Page />
     </>
   );
 };

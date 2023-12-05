@@ -20,6 +20,8 @@ import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
 
 import { SubirBajarEliminarAnexos } from "./SubirBajarEliminarAnexos";
 
+import { obtenerDatosFindAllOne } from "./api";
+
 export function AnexsosPdf({ nombrepdf, refrescarFunction }) {
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
@@ -88,6 +90,15 @@ export function AnexsosPdf({ nombrepdf, refrescarFunction }) {
       setOpen(false);
     }
   };
+
+  const handleClick = () => {
+    obtenerDatosFindAllOne(
+      selectedContCod,
+      setContcodComplejaData,
+      setErrorContcodComplejaData
+    );
+  };
+
   return (
     <>
       <Button
@@ -142,10 +153,8 @@ export function AnexsosPdf({ nombrepdf, refrescarFunction }) {
           )}
         </DialogContent>
         <DialogActions>
-          {/* <Button onClick={handleClose}>Cerrar</Button> */}
           <Button
             onClick={() => {
-              refrescarFunction(); // Llamada a la función refrescarDatos desde aquí
               handleClose();
             }}
           >
