@@ -300,7 +300,7 @@ const DatosComplViviend = ({ selectedContCod }) => {
           </Table>
         </TableContainer>
       </Paper>
-      <Page />
+      
     </>
   );
 };
